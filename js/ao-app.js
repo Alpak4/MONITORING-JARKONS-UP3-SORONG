@@ -3,7 +3,11 @@
   function initAO(){
   if(initialized) return;
   initialized = true;
-  const AO = window.AO;
+  const run = () => { renderAO(window.AO); };
+  if(window.AO && typeof window.AO.load === "function"){ window.AO.load().then(run).catch(run); }
+  else run();
+  }
+  function renderAO(AO){
   const fmtRp = n => "Rp " + Math.round(n).toLocaleString("id-ID");
   const fmtRpShort = n => {
     const abs = Math.abs(n);
@@ -163,6 +167,23 @@
   }
   renderChecklist();
 
+  // ---------- Source badge ----------
+  (function(){
+    const el = document.getElementById("ao-source-bar");
+    if(!el) return;
+    const live = AO.source === "live";
+    const stamp = new Date().toLocaleString("id-ID",{day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"});
+    el.innerHTML = `
+      <span style="display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:700;padding:6px 12px;border-radius:999px;background:${live?'#E6F5EC':'#FBEED3'};color:${live?'#0F7A3D':'#8A5A00'}">
+        <span style="width:8px;height:8px;border-radius:50%;background:${live?'#1F9D57':'#E0A100'};box-shadow:0 0 0 3px ${live?'rgba(31,157,87,.2)':'rgba(224,161,0,.2)'}"></span>
+        ${live?'Data Langsung dari Spreadsheet':'Data Snapshot (offline)'}
+      </span>
+      <span style="font-size:11.5px;color:#7A8698">Diperbarui ${stamp} · ${jobs.length} pekerjaan · ${AO.paket}</span>
+      <button id="ao-refresh" style="margin-left:auto;font:inherit;font-size:11.5px;font-weight:700;color:#1273C4;background:#EAF3FB;border:1px solid #CBDCEE;border-radius:8px;padding:6px 12px;cursor:pointer">↻ Muat Ulang</button>`;
+    const btn = document.getElementById("ao-refresh");
+    if(btn) btn.onclick = () => { if(AO._p) AO._p = null; AO.source = "snapshot"; location.reload(); };
+  })();
+
   // ---------- Table ----------
   document.getElementById("ao-tcount").textContent = jobs.length + " pekerjaan";
   document.getElementById("ao-tbody").innerHTML = jobs.map(j => `
@@ -230,7 +251,18 @@
   } else {
     findings.push(`<b>Sisa anggaran tersedia ${fmtRp(T.sisa)}</b> yang masih dapat dialokasikan untuk pekerjaan pemeliharaan tambahan.`);
   }
-  findings.push(`Rekomendasi: prioritaskan pencairan tagihan pada pekerjaan dengan tagihan besar tapi terbayar 0% (mis. <b>Kerja Sama & PPK</b>, <b>Pemeliharaan Preventif JTM</b>), serta evaluasi ulang alokasi <b>Gudang & Logistik Distribusi</b> yang kontraknya 210% dari SKAO.`);
+  const zeroPayBigTagihan = jobs.filter(j => j.tagihan > 0 && j.terbayar === 0).sort((a,b)=>b.tagihan-a.tagihan).slice(0,2);
+  const topOver = overContract.slice().sort((a,b)=>b.pctKontrak-a.pctKontrak)[0];
+  let rec = "Rekomendasi: ";
+  if(zeroPayBigTagihan.length){
+    rec += `prioritaskan pencairan tagihan pada pekerjaan dengan tagihan besar namun belum terbayar (${zeroPayBigTagihan.map(j=>"<b>"+j.nama+"</b> — tagihan "+fmtRp(j.tagihan)).join(", ")})`;
+  } else {
+    rec += `jaga ritme pencairan tagihan berjalan agar realisasi pembayaran tidak menumpuk di akhir tahun`;
+  }
+  if(topOver){
+    rec += `; serta evaluasi ulang alokasi <b>${topOver.nama}</b> yang kontraknya ${topOver.pctKontrak.toFixed(0)}% dari SKAO.`;
+  } else { rec += "."; }
+  findings.push(rec);
 
   document.getElementById("ao-eval-list").innerHTML = findings.map(f => `<li>${f}</li>`).join("");
   }

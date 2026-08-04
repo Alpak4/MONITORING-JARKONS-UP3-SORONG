@@ -32,10 +32,13 @@
     return "Lainnya";
   }
 
-  function applyFilters() {
+  function applyFilters(opts) {
+    const includeExcluded = opts && opts.includeExcluded;
     return ALL.filter((r) => {
       // Seluruh halaman hanya merekap baris dengan indikasi proteksi terisi (GF/OC/UFR).
       if (GD.INDIKASI_ORDER.indexOf(r.indikasiKode) === -1) return false;
+      // Kategori PEMBANGKIT & PADAM GARDU/JTR (kolom T) diabaikan, kecuali untuk rekap indikasi.
+      if (!includeExcluded && r.excluded) return false;
       if (state.periode !== "all" && r.periode !== state.periode) return false;
       if (state.ulp !== "all" && r.ulp !== state.ulp) return false;
       if (state.kode !== "all" && r.kode !== state.kode) return false;
@@ -664,7 +667,7 @@
     renderTable(rows);
     renderMitigasi(rows);
     renderKinerja(rows);
-    renderIndikasi(rows);
+    renderIndikasi(applyFilters({ includeExcluded: true }));
     const ctx = [];
     if (state.periode !== "all") ctx.push(state.periode);
     if (state.ulp !== "all") ctx.push("ULP " + state.ulp);

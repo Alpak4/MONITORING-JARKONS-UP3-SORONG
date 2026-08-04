@@ -85,6 +85,7 @@
       const durasi = (r[10] || "").trim();
       const u5 = (r[11] || "").trim();
       const kelompok = (r[19] || "").trim();
+      const excluded = /^\s*pembangkit\s*$/i.test(kelompok) || /padam\s*gardu\s*\/?\s*jtr/i.test(kelompok);
       const code = causeCode(kelompok);
       const tgl = parseDate(r[6]);
       const rec = {
@@ -108,6 +109,7 @@
         cuaca: (r[13] || "").trim(),
         kontrol: (r[14] || "").trim(),
         kelompok: kelompok,
+        excluded: excluded,
         kode: code,
         kodeLabel: CAUSE_LABELS[code] || kelompok,
         detail: (r[20] || "").trim(),
