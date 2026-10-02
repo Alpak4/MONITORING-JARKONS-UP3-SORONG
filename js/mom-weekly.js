@@ -136,7 +136,12 @@
     });
   }
 
-  document.readyState === "loading"
-    ? document.addEventListener("DOMContentLoaded", init)
-    : init();
+  function boot(){
+    const go = () => ("requestIdleCallback" in window)
+      ? requestIdleCallback(init, { timeout: 3000 })
+      : setTimeout(init, 800);
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", go);
+    else go();
+  }
+  boot();
 })();

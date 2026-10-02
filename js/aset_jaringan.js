@@ -296,10 +296,147 @@ UP3 SORONG,ULP SORONG KOTA,SAOKA,"13,65",25
     }
     const dc = document.querySelector("#ajd-count"); if (dc) dc.textContent = t.penyulang + " penyulang";
     // Tren & matriks bulanan
+    LAST_ULPS = groups.map((g) => g.ulp);
     renderRabasMonthly(groups.map((g) => g.ulp));
     renderVendor(groups.map((g) => g.ulp));
     renderDaily(groups.map((g) => g.ulp));
   };
+
+  // ---------- Ekspor Excel (mengikuti filter aktif) ----------
+  let LAST_ULPS = [];
+  function xmlEsc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+  function cellN(v){ return '<Cell><Data ss:Type="Number">' + (v || 0) + '</Data></Cell>'; }
+  function cellS(v){ return '<Cell><Data ss:Type="String">' + xmlEsc(v) + '</Data></Cell>'; }
+  function sheet(name, rows){
+    return '<Worksheet ss:Name="' + xmlEsc(name) + '"><Table>' +
+      rows.map((r) => '<Row>' + r.join("") + '</Row>').join("") + '</Table></Worksheet>';
+  }
+  function exportRabasXls(){
+    if(!window.Rabas) return;
+    const R = window.Rabas, ML = R.MONTHS_LONG;
+    const sel = R.month;
+    const months = R.activeMonths().filter((m) => sel === "all" || sel == null || m === sel);
+    const byUlp = R.monthlyByUlp();
+    const names = (LAST_ULPS.length ? LAST_ULPS : Object.keys(byUlp)).filter((u) => byUlp[u]);
+    const periodTxt = (sel === "all" || sel == null) ? "Semua Bulan 2026" : ML[sel] + " 2026";
+
+    // Sheet 1 — Rekap bulanan per ULP
+    const s1 = [];
+    s1.push([cellS("REALISASI RABAS & TEBANG BULANAN — UP3 SORONG")]);
+    s1.push([cellS("Periode: " + periodTxt), cellS("ULP: " + (names.length ? names.join(", ") : "Semua"))]);
+    s1.push([cellS("")]);
+    const h1 = [cellS("ULP")];
+    months.forEach((m) => { h1.push(cellS(ML[m] + " — Rabas (kms)")); h1.push(cellS(ML[m] + " — Tebang (btg)")); });
+    h1.push(cellS("Total Rabas (kms)")); h1.push(cellS("Total Tebang (btg)"));
+    s1.push(h1);
+    const colT = months.map(() => ({ kms: 0, btg: 0 }));
+    let gk = 0, gb = 0;
+    names.forEach((u) => {
+      const row = [cellS(u)];
+      let tk = 0, tb = 0;
+      months.forEach((m, i) => {
+        const c = byUlp[u][m] || { kms: 0, btg: 0 };
+        row.push(cellN(+c.kms.toFixed(2))); row.push(cellN(c.btg));
+        tk += c.kms; tb += c.btg; colT[i].kms += c.kms; colT[i].btg += c.btg;
+      });
+      row.push(cellN(+tk.toFixed(2))); row.push(cellN(tb));
+      gk += tk; gb += tb;
+      s1.push(row);
+    });
+    const tr1 = [cellS("TOTAL")];
+    colT.forEach((c) => { tr1.push(cellN(+c.kms.toFixed(2))); tr1.push(cellN(c.btg)); });
+    tr1.push(cellN(+gk.toFixed(2))); tr1.push(cellN(gb));
+    s1.push(tr1);
+
+    // Sheet 2 — Rincian harian
+    const s2 = [[cellS("Tanggal"), cellS("Bulan"), cellS("ULP"), cellS("Rabas (kms)"), cellS("Tebang (btg)")]];
+    const d = R.dailyByUlp ? R.dailyByUlp(names) : { dates: [], ulps: [] };
+    d.dates.forEach((dt) => {
+      d.ulps.forEach((u) => {
+        const c = dt.cells[u];
+        if(!c || (!c.kms && !c.btg)) return;
+        s2.push([cellN(dt.d), cellS(ML[dt.m] + " 2026"), cellS(u), cellN(+c.kms.toFixed(2)), cellN(c.btg)]);
+      });
+    });
+    if(s2.length === 1) s2.push([cellS("Tidak ada rincian harian pada filter ini")]);
+
+    const xml = '<?xml version="1.0"?>\n<?mso-application progid="Excel.Sheet"?>' +
+      '<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">' +
+      sheet("Rekap Bulanan", s1) + sheet("Rincian Harian", s2) + '</Workbook>';
+
+    const blob = new Blob(["\ufeff", xml], { type: "application/vnd.ms-excel;charset=utf-8" });
+    const a = document.createElement("a");
+    const slug = (sel === "all" || sel == null) ? "Semua-Bulan" : ML[sel];
+    a.href = URL.createObjectURL(blob);
+    a.download = "Realisasi-Rabas-Tebang_" + slug + "_2026.xls";
+    document.body.appendChild(a); a.click();
+    setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+  }
+  function exportDailyXls(){
+    if(!window.Rabas) return;
+    const R = window.Rabas, ML = R.MONTHS_LONG, sel = R.month;
+    const names = LAST_ULPS.length ? LAST_ULPS : [];
+    const periodTxt = (sel === "all" || sel == null) ? "Semua Bulan 2026" : ML[sel] + " 2026";
+    const d = R.dailyByUlp ? R.dailyByUlp(names) : { dates: [], ulps: [] };
+    const ulps = d.ulps || [];
+
+    // Sheet 1 — matriks harian (Tanggal × ULP)
+    const s1 = [];
+    s1.push([cellS("REALISASI RABAS & TEBANG HARIAN — UP3 SORONG")]);
+    s1.push([cellS("Periode: " + periodTxt), cellS("ULP: " + (ulps.length ? ulps.join(", ") : "Semua"))]);
+    s1.push([cellS("")]);
+    const h = [cellS("Tanggal")];
+    ulps.forEach((u) => { h.push(cellS(u + " — Rabas (kms)")); h.push(cellS(u + " — Tebang (btg)")); });
+    h.push(cellS("Total Rabas (kms)")); h.push(cellS("Total Tebang (btg)"));
+    s1.push(h);
+    const colT = ulps.map(() => ({ kms: 0, btg: 0 }));
+    let gk = 0, gb = 0;
+    d.dates.forEach((dt) => {
+      const lbl = String(dt.d).padStart(2, "0") + " " + ML[dt.m] + " 2026";
+      const row = [cellS(lbl)];
+      let rk = 0, rb = 0;
+      ulps.forEach((u, i) => {
+        const c = dt.cells[u] || { kms: 0, btg: 0 };
+        row.push(cellN(+c.kms.toFixed(2))); row.push(cellN(c.btg));
+        rk += c.kms; rb += c.btg; colT[i].kms += c.kms; colT[i].btg += c.btg;
+      });
+      row.push(cellN(+rk.toFixed(2))); row.push(cellN(rb));
+      gk += rk; gb += rb;
+      s1.push(row);
+    });
+    const tr1 = [cellS("TOTAL")];
+    colT.forEach((c) => { tr1.push(cellN(+c.kms.toFixed(2))); tr1.push(cellN(c.btg)); });
+    tr1.push(cellN(+gk.toFixed(2))); tr1.push(cellN(gb));
+    s1.push(tr1);
+    if(!d.dates.length) s1.push([cellS("Tidak ada realisasi harian pada filter ini")]);
+
+    // Sheet 2 — daftar baris (long format)
+    const s2 = [[cellS("Tanggal"), cellS("Bulan"), cellS("ULP"), cellS("Rabas (kms)"), cellS("Tebang (btg)")]];
+    d.dates.forEach((dt) => {
+      ulps.forEach((u) => {
+        const c = dt.cells[u];
+        if(!c || (!c.kms && !c.btg)) return;
+        s2.push([cellN(dt.d), cellS(ML[dt.m] + " 2026"), cellS(u), cellN(+c.kms.toFixed(2)), cellN(c.btg)]);
+      });
+    });
+    if(s2.length === 1) s2.push([cellS("Tidak ada data pada filter ini")]);
+
+    const xml = '<?xml version="1.0"?>\n<?mso-application progid="Excel.Sheet"?>' +
+      '<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">' +
+      sheet("Harian per ULP", s1) + sheet("Daftar Rincian", s2) + '</Workbook>';
+    const blob = new Blob(["\ufeff", xml], { type: "application/vnd.ms-excel;charset=utf-8" });
+    const a = document.createElement("a");
+    const slug = (sel === "all" || sel == null) ? "Semua-Bulan" : ML[sel];
+    a.href = URL.createObjectURL(blob);
+    a.download = "Realisasi-Harian-Rabas-Tebang_" + slug + "_2026.xls";
+    document.body.appendChild(a); a.click();
+    setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+  }
+  document.addEventListener("click", function(e){
+    if(!e.target.closest) return;
+    if(e.target.closest("#rabas-xls")){ e.preventDefault(); exportRabasXls(); }
+    else if(e.target.closest("#daily-xls")){ e.preventDefault(); exportDailyXls(); }
+  });
 
   // ---------- Laporan Realisasi Harian per ULP ----------
   function renderDaily(ulpNames) {
@@ -559,13 +696,13 @@ UP3 SORONG,ULP SORONG KOTA,SAOKA,"13,65",25
     buildFilter();
     buildMonthFilter();
     window.renderAsetJaringan();
-    Promise.all([
+    Promise.allSettled([
       window.AsetJaringan.load(),
       window.Rabas ? window.Rabas.load() : Promise.resolve(),
     ]).then(() => { buildFilter(); buildMonthFilter(); window.renderAsetJaringan(); });
   }
-  if (document.readyState === "loading") window.addEventListener("DOMContentLoaded", start);
-  else start();
+  let rowStarted = false;
+  window.ROWView = { init: function(){ if(rowStarted) return; rowStarted = true; start(); } };
 
   // Hook realtime: dipanggil app.js saat auto-refresh untuk menarik ulang data ROW/Aset.
   window.refreshRealtime = function () {

@@ -271,6 +271,116 @@
     });
   }
 
+
+  // ---------- Unduh rincian pekerjaan (Excel) sesuai filter aktif ----------
+  function esc(s) { return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+  function cellS(v) { return '<Cell><Data ss:Type="String">' + esc(v) + "</Data></Cell>"; }
+  function cellN(v) { return '<Cell><Data ss:Type="Number">' + (+v || 0) + "</Data></Cell>"; }
+  function sheetXml(name, rows) {
+    return '<Worksheet ss:Name="' + esc(name).slice(0, 31) + '"><Table>' +
+      rows.map(function (r) { return "<Row>" + r.join("") + "</Row>"; }).join("") +
+      "</Table></Worksheet>";
+  }
+  function filterSummary() {
+    var fm = function (id) { var e = $(id); if (!e) return ""; var o = e.options ? e.options[e.selectedIndex] : null; return o ? o.textContent : e.value; };
+    return [
+      ["Bulan", state.bulan === "all" ? "Semua Bulan" : MONTH_ID[state.bulan] + " " + YEAR],
+      ["Minggu", state.minggu === "all" ? "Semua Minggu" : state.minggu],
+      ["ULP", state.ulp === "all" ? "Semua ULP" : fm("#pm-f-ulp")],
+      ["Kategori", state.kat === "all" ? "Semua Kategori" : state.kat],
+      ["Status", state.status === "all" ? "Semua" : state.status],
+      ["Padam", state.padam === "all" ? "Semua" : (state.padam === "padam" ? "Dengan Padam" : "Tanpa Padam")],
+      ["Pencarian", state.q.trim() || "—"],
+      ["Sumber Data", (DATA && DATA.source === "live") ? "Google Spreadsheet (live)" : "Data tertanam"]
+    ];
+  }
+  function sortedRows(data) {
+    var k = state.sortKey, dir = state.sortDir === "asc" ? 1 : -1;
+    return data.slice().sort(function (a, b) {
+      var va, vb;
+      if (k === "tgl") { va = a.dateKey || ""; vb = b.dateKey || ""; }
+      else if (k === "vol") { va = +a.vol || 0; vb = +b.vol || 0; }
+      else { va = (a[k] || "").toString().toLowerCase(); vb = (b[k] || "").toString().toLowerCase(); }
+      if (va < vb) return -1 * dir; if (va > vb) return 1 * dir; return 0;
+    });
+  }
+  function exportXls() {
+    var data = sortedRows(filtered());
+
+    // Sheet 1 — Rincian pekerjaan
+    var s1 = [];
+    s1.push([cellS("RINCIAN PEKERJAAN PEMELIHARAAN — PLN UP3 SORONG")]);
+    s1.push([cellS("Diunduh: " + new Date().toLocaleString("id-ID"))]);
+    s1.push([cellS("")]);
+    filterSummary().forEach(function (f) { s1.push([cellS("Filter — " + f[0]), cellS(f[1])]); });
+    s1.push([cellS("")]);
+    s1.push(["Tanggal", "ULP", "Nama ULP", "Minggu", "Kategori", "Pekerjaan", "Volume", "Satuan", "Penyulang", "Padam", "Pelaksana", "Lokasi", "WO / SPBJ", "Status"].map(cellS));
+    data.forEach(function (r) {
+      s1.push([
+        cellS(r.tanggalStr || r.tanggalFull || r.tanggalRaw || ""),
+        cellS(r.ulp), cellS(r.ulpNama || ""), cellS(r.minggu || ""),
+        cellS(r.kategori), cellS(r.pekerjaan),
+        cellN(r.vol), cellS(r.sat || ""),
+        cellS(r.penyulang || ""), cellS(r.padam || ""),
+        cellS(r.pelaksana || ""), cellS(r.lokasi || ""),
+        cellS(r.wo || ""), cellS(r.progres || (r.done ? "SUDAH" : "BELUM"))
+      ]);
+    });
+    if (!data.length) s1.push([cellS("Tidak ada pekerjaan pada filter ini")]);
+    else {
+      s1.push([cellS("")]);
+      s1.push([cellS("TOTAL"), cellS(""), cellS(""), cellS(""), cellS(""), cellS(data.length + " pekerjaan"),
+        cellN(data.reduce(function (a, r) { return a + (+r.vol || 0); }, 0))]);
+    }
+
+    // Sheet 2 — Rekap per ULP
+    var s2 = [["ULP", "Nama ULP", "Total", "Sudah", "Belum", "Progres (%)", "Dengan Padam", "Tanpa Padam", "Volume"].map(cellS)];
+    (DATA.ULPS || []).forEach(function (u) {
+      var d = data.filter(function (r) { return r.ulp === u.id; });
+      if (!d.length) return;
+      var sudah = d.filter(function (r) { return r.done; }).length;
+      var padam = d.filter(function (r) { return r.padamFlag; }).length;
+      s2.push([cellS(u.id), cellS(u.nama), cellN(d.length), cellN(sudah), cellN(d.length - sudah),
+        cellN(Math.round((sudah / d.length) * 100)), cellN(padam), cellN(d.length - padam),
+        cellN(Math.round(d.reduce(function (a, r) { return a + (+r.vol || 0); }, 0)))]);
+    });
+
+    // Sheet 3 — Rekap per kategori
+    var s3 = [["Kategori", "Total", "Sudah", "Belum", "Progres (%)", "Volume"].map(cellS)];
+    (DATA.KATEGORI || []).forEach(function (k) {
+      var d = data.filter(function (r) { return r.kategori === k; });
+      if (!d.length) return;
+      var sudah = d.filter(function (r) { return r.done; }).length;
+      s3.push([cellS(k), cellN(d.length), cellN(sudah), cellN(d.length - sudah),
+        cellN(Math.round((sudah / d.length) * 100)),
+        cellN(Math.round(d.reduce(function (a, r) { return a + (+r.vol || 0); }, 0)))]);
+    });
+
+    var xml = '<?xml version="1.0"?>\n<?mso-application progid="Excel.Sheet"?>' +
+      '<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">' +
+      sheetXml("Rincian Pekerjaan", s1) + sheetXml("Rekap per ULP", s2) + sheetXml("Rekap Kategori", s3) +
+      "</Workbook>";
+
+    var parts = ["Rincian-Pemeliharaan"];
+    if (state.ulp !== "all") parts.push(state.ulp);
+    if (state.bulan !== "all") parts.push(MONTH_ID[state.bulan]);
+    if (state.minggu !== "all") parts.push(weekShort(state.minggu).replace(/\s+/g, ""));
+    if (state.kat !== "all") parts.push(state.kat);
+    if (state.status !== "all") parts.push(state.status);
+
+    var blob = new Blob(["\ufeff", xml], { type: "application/vnd.ms-excel;charset=utf-8" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = parts.join("_") + "_" + YEAR + ".xls";
+    document.body.appendChild(a); a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+  }
+
+  function bindExport() {
+    var b = $("#pm-xls");
+    if (b) b.onclick = exportXls;
+  }
+
   function bindSort() {
     document.querySelectorAll("#view-pemeliharaan th[data-sort]").forEach(function (th) {
       th.onclick = function () {
@@ -417,6 +527,7 @@
       if (!DATA || !DATA.rows) { console.warn("PLN data tidak tersedia"); return; }
       buildFilters();
       bindSort();
+      bindExport();
       rerender();
       loadLive();
     }

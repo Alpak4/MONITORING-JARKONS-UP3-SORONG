@@ -9,6 +9,13 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <style>
+  .wp-pill{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:#41556B;background:#EEF3F9;border:1px solid #DCE5EF;border-radius:999px;padding:5px 11px}
+  .wp-pill.live{color:#0F7A3D;background:#E6F5EC;border-color:#BFE3CE}
+  .wp-pill.warn{color:#B3261E;background:#FDECEA;border-color:#F3C9C4}
+  tr.wp-sub td{background:#F4F8FC;font-weight:800;color:#12395F;border-top:1px solid #DCE5EF}
+  .wp-pill.loading{color:#8A6A00;background:#FFF6DF;border-color:#F2E0AE}
+</style>
+<style>
   :root{
     --blue:#1273C4; --blue-deep:#0A4F8F; --navy:#073B6B; --navy-2:#0C2E52;
     --yellow:#FDB913; --red:#E2231A; --green:#1F9D57; --teal:#0F9B9B;
@@ -340,6 +347,177 @@
   .verdict-stats div{display:flex; flex-direction:column}
   .verdict-stats span{font-size:23px; font-weight:800; font-variant-numeric:tabular-nums}
   .verdict-stats small{font-size:10px; opacity:.72; text-transform:uppercase; letter-spacing:.4px; margin-top:2px}
+  /* ===================== PROFESSIONAL REFINEMENT LAYER ===================== */
+  :root{
+    --shadow:0 1px 1px rgba(16,36,59,.04), 0 2px 6px rgba(16,36,59,.05);
+    --shadow-md:0 2px 4px rgba(16,36,59,.05), 0 12px 28px -8px rgba(16,36,59,.13);
+    --line-soft:#EDF1F6; --surface-alt:#F8FAFC;
+    --bg:#F4F6FA;
+  }
+  body{letter-spacing:-.005em}
+  a{color:var(--blue); text-decoration:none} a:hover{color:var(--blue-deep); text-decoration:underline}
+  ::selection{background:rgba(18,115,196,.16)}
+  *::-webkit-scrollbar{width:10px; height:10px}
+  *::-webkit-scrollbar-thumb{background:#CBD6E3; border-radius:6px; border:2px solid transparent; background-clip:content-box}
+  *::-webkit-scrollbar-thumb:hover{background:#AEBECF; background-clip:content-box}
+  *::-webkit-scrollbar-track{background:transparent}
+
+  /* Header — flatter, more corporate */
+  header.topbar{
+    background:linear-gradient(105deg,#062F57 0%,var(--navy) 45%,var(--blue-deep) 100%);
+    padding:13px clamp(16px,3vw,34px); border-bottom:2px solid var(--yellow);
+    box-shadow:0 1px 0 rgba(255,255,255,.06) inset;
+  }
+  .brand-txt .org{font-size:18px; letter-spacing:-.2px}
+  .brand-txt .sub{font-size:10.5px; opacity:.7; letter-spacing:.9px}
+  .srcbadge{background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.14); font-size:10.5px; letter-spacing:.2px}
+  .srcbadge.live{background:rgba(31,157,87,.22); border-color:rgba(120,230,170,.3)}
+  #logout-btn{transition:background .15s,border-color .15s}
+  #logout-btn:hover{background:rgba(255,255,255,.22)!important; border-color:rgba(255,255,255,.4)!important}
+
+  /* Title band */
+  .titleband{padding-top:22px}
+  .titleband h1{letter-spacing:-.7px}
+  .titleband .scope{font-size:12.5px; font-weight:500; color:var(--muted)}
+  .legend-note{font-size:11px; line-height:1.55}
+
+  /* Filter bar */
+  .filters{
+    background:rgba(244,246,250,.82); backdrop-filter:saturate(180%) blur(10px);
+    padding:11px clamp(16px,3vw,34px); gap:9px; border-bottom:1px solid var(--line);
+  }
+  .filters label{font-size:10px; letter-spacing:.7px; color:#7A8698}
+  select,input[type=search]{
+    box-shadow:none; border:1px solid #DCE4ED; border-radius:8px; padding:7px 11px; font-size:12.5px;
+    transition:border-color .15s, box-shadow .15s;
+  }
+  select:hover,input[type=search]:hover{border-color:#C3D0DE}
+  select:focus,input:focus{border-color:var(--blue); box-shadow:0 0 0 3px rgba(18,115,196,.13)}
+  .btn-reset{border-radius:8px; padding:7px 15px; font-size:12px; letter-spacing:.2px; transition:background .15s}
+
+  /* Tabs */
+  .tab{padding:12px 18px 11px; font-size:13px; letter-spacing:-.1px; transition:color .15s}
+  .tab:hover{color:var(--blue-deep)}
+
+  /* Section headings */
+  .section-h{margin:34px 0 13px}
+  .section-h .bar{width:3px; height:17px; border-radius:2px}
+  .section-h h2{font-size:15.5px; letter-spacing:-.3px}
+  .section-h .hint{font-size:11.5px}
+
+  /* Cards & panels */
+  .kpi,.panel,.tube-card{border:1px solid var(--line-soft); border-radius:12px; box-shadow:var(--shadow); transition:box-shadow .2s, transform .2s}
+  .kpi:hover,.panel:hover,.tube-card:hover{box-shadow:var(--shadow-md)}
+  .kpi{padding:15px 16px 14px}
+  .kpi::before{width:3px; opacity:.9}
+  .kpi__label{font-size:10.5px; letter-spacing:.65px; color:#7A8698}
+  .kpi__value{font-size:29px; letter-spacing:-1px; font-variant-numeric:tabular-nums; margin:8px 0 3px}
+  .kpi__sub{font-size:11px; line-height:1.45}
+  .panel h3{font-size:13px; letter-spacing:-.2px}
+  .panel .ph-sub{font-size:10.5px; letter-spacing:.1px}
+
+  /* Tables — enterprise grade */
+  table{font-size:12.5px; font-variant-numeric:tabular-nums}
+  thead th{
+    background:linear-gradient(180deg,#123A63,#0D2F52); font-size:10.5px; letter-spacing:.55px;
+    padding:10px 12px; box-shadow:inset 0 -1px 0 rgba(255,255,255,.1);
+  }
+  thead th[data-sort]:hover{background:var(--blue)}
+  tbody td{padding:9px 12px; border-bottom:1px solid var(--line-soft)}
+  tbody tr:nth-child(even) td{background:#FBFCFE}
+  tbody tr:hover td{background:#F0F6FC}
+  tbody tr:last-child td{border-bottom:none}
+  tbody tr.total-row td,tbody tr.ajr-total td{background:#E8F1FB; border-top:2px solid var(--blue); color:var(--navy)}
+  tbody tr.kn-champ-row td{background:#FFF8E6}
+  tbody tr td.mx-sel{background:#FFF6E0}
+  .table-wrap,.table-scroll{border-radius:12px}
+  .table-head{padding-bottom:2px}
+  .table-head .tt{letter-spacing:-.2px}
+  .pill{letter-spacing:.3px}
+  #rabas-xls:hover,#daily-xls:hover{background:#D8EFE2!important; border-color:#A6D6BC!important}
+
+  /* ===================== 4DX ===================== */
+  .fdx-badge{display:inline-flex; align-items:center; gap:7px; font-size:12px; font-weight:700; padding:6px 12px; border-radius:999px; background:#E6F5EC; color:#0F7A3D}
+  .fdx-badge.warn{background:#FBEED3; color:#8A5A00}
+  .fdx-stamp{font-size:11.5px; color:var(--muted)}
+  .fdx-sec-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:14px}
+  .fdx-sec-card{position:relative; padding:16px 17px 15px}
+  .fdx-sec-card h3{margin:0 0 10px; padding-right:34px; font-size:12.5px; line-height:1.4; min-height:35px}
+  .fdx-sec-no{position:absolute; top:14px; right:15px; font-size:11px; font-weight:800; color:var(--blue); background:#EAF3FB; border-radius:6px; padding:2px 8px}
+  .fdx-sec-v{font-size:25px; font-weight:800; color:var(--navy); letter-spacing:-.8px; font-variant-numeric:tabular-nums; display:flex; align-items:baseline; gap:7px; margin-bottom:9px}
+  .fdx-sec-v em{font-style:normal; font-size:10.5px; font-weight:600; color:var(--muted); letter-spacing:.2px}
+  .fdx-sec-s{margin-top:8px; font-size:11px; color:var(--muted); line-height:1.5}
+  .fdx-bar{height:6px; border-radius:4px; background:#EDF1F6; overflow:hidden}
+  .fdx-bar span{display:block; height:100%; border-radius:4px; background:linear-gradient(90deg,var(--blue),var(--blue-deep))}
+  .fdx-barv{margin-top:4px; font-size:10.5px; font-weight:700; color:var(--navy); font-variant-numeric:tabular-nums}
+  .fdx-barv em{font-style:normal; font-weight:600; color:var(--muted)}
+  .fdx-cmp-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:11px}
+  .fdx-cmp{text-align:left; font:inherit; cursor:pointer; background:#fff; border:1px solid var(--line-soft); border-radius:11px; padding:13px 14px; box-shadow:var(--shadow); transition:border-color .15s, box-shadow .2s}
+  .fdx-cmp:hover{box-shadow:var(--shadow-md)}
+  .fdx-cmp.on{border-color:var(--blue); box-shadow:0 0 0 3px rgba(18,115,196,.13)}
+  .fdx-cmp-h{display:flex; align-items:baseline; justify-content:space-between; gap:9px; margin-bottom:9px}
+  .fdx-cmp-h span{font-size:11.5px; font-weight:700; color:var(--ink); letter-spacing:-.1px}
+  .fdx-cmp-h b{font-size:16px; color:var(--navy); font-variant-numeric:tabular-nums; letter-spacing:-.5px}
+  .fdx-cmp-bar{height:5px; border-radius:3px; background:#EDF1F6; overflow:hidden}
+  .fdx-cmp-bar span{display:block; height:100%; border-radius:3px; background:linear-gradient(90deg,var(--yellow),#E9A700)}
+  .fdx-cmp.on .fdx-cmp-bar span{background:linear-gradient(90deg,var(--blue),var(--blue-deep))}
+  .fdx-cmp-s{margin-top:8px; font-size:10.5px; color:var(--muted)}
+  #fdx-tbl td.num{text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap}
+  #fdx-tbl td.fdx-name{min-width:280px; line-height:1.45}
+  #fdx-tbl tr.fdx-sec td{background:#EAF1F9!important; font-weight:800; font-size:11px; letter-spacing:.4px; text-transform:uppercase; color:var(--navy)}  #fdx-xls:hover{background:#D8EFE2!important; border-color:#A6D6BC!important}
+  #fdx-clear:hover{background:#FADAD6!important}
+  .fdx-bar span.ok{background:linear-gradient(90deg,#2FA96A,#127A45)}
+  .fdx-bar span.mid{background:linear-gradient(90deg,var(--blue),var(--blue-deep))}
+  .fdx-bar span.low{background:linear-gradient(90deg,var(--yellow),#E9A700)}
+  .fdx-bar span.nil{background:#D6DEE8}
+  .fdx-cmp-bar span.ok{background:linear-gradient(90deg,#2FA96A,#127A45)}
+  .fdx-cmp-bar span.mid{background:linear-gradient(90deg,var(--blue),var(--blue-deep))}
+  .fdx-cmp-bar span.low{background:linear-gradient(90deg,var(--yellow),#E9A700)}
+  .fdx-cmp-bar span.nil{background:#D6DEE8}
+  .fdx-in{width:82px; text-align:right; font:inherit; font-size:12px; font-variant-numeric:tabular-nums; padding:5px 8px; border:1px solid #DCE4ED; border-radius:7px; background:#FCFDFF; transition:border-color .15s, box-shadow .15s}
+  .fdx-in:hover{border-color:#C3D0DE}
+  .fdx-in:focus{outline:none; border-color:var(--blue); box-shadow:0 0 0 3px rgba(18,115,196,.13); background:#fff}
+  #fdx-trend{padding:15px 17px 13px}
+  .fdx-trend-head{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:13px; font-size:12px; font-weight:700; color:var(--ink)}
+  .fdx-trend-lg{display:inline-flex; align-items:center; gap:6px; font-size:10.5px; font-weight:600; color:var(--muted)}
+  .fdx-trend-lg i{width:14px; height:0; border-top:2px dashed var(--red)}
+  .fdx-trend-bars{position:relative; display:flex; align-items:flex-end; gap:3px; height:150px}
+  .fdx-day{position:relative; flex:1; min-width:0; display:flex; flex-direction:column; justify-content:flex-end; align-items:center; height:100%; gap:4px; background:none; border:none; padding:0 0 2px; cursor:pointer; border-radius:5px}
+  .fdx-day:hover{background:#F2F7FC}
+  .fdx-day.on{background:#E8F1FB}
+  .fdx-day-bar{width:100%; max-width:20px; border-radius:3px 3px 0 0; background:#D6DEE8; transition:height .2s}
+  .fdx-day-bar.ok{background:linear-gradient(180deg,#37B876,#127A45)}
+  .fdx-day-bar.low{background:linear-gradient(180deg,#FFC93A,#E9A700)}
+  .fdx-day em{font-style:normal; font-size:9px; font-weight:700; color:var(--muted); line-height:1}
+  .fdx-day.on em{color:var(--blue-deep)}
+  .fdx-target-line{position:absolute; left:0; right:0; border-top:2px dashed var(--red); opacity:.55; pointer-events:none}
+
+  /* ===================== WIG Keandalan ===================== */
+  .wig-block{margin-bottom:16px}
+  .wig-cap{font-size:11.5px; font-weight:700; color:var(--navy); letter-spacing:.2px; padding:0 2px 9px}
+  .wig-scroll{overflow-x:auto; border:1px solid var(--line-soft); border-radius:11px; background:#fff; box-shadow:var(--shadow)}
+  .wig-tbl{border-collapse:collapse; width:100%; font-size:11.5px; font-variant-numeric:tabular-nums}
+  .wig-tbl th{background:linear-gradient(180deg,#123A63,#0D2F52); color:#fff; font-weight:700; padding:7px 8px; white-space:nowrap; text-align:center; border-right:1px solid rgba(255,255,255,.1)}
+  .wig-tbl th.wig-mh{font-size:11px; letter-spacing:.3px; border-left:2px solid rgba(255,255,255,.22)}
+  .wig-tbl th.wig-sub{font-size:9.5px; font-weight:600; letter-spacing:.3px; padding:5px 8px; background:#0F3559}
+  .wig-tbl th.wig-no{width:34px}
+  .wig-tbl th.wig-act{text-align:left; min-width:210px; padding-left:12px}
+  .wig-tbl td{padding:7px 8px; border-bottom:1px solid var(--line-soft); border-right:1px solid #F1F5F9; white-space:nowrap}
+  .wig-tbl td.wig-no{text-align:center; font-weight:700; color:var(--muted); width:34px}
+  .wig-tbl td.wig-act{font-weight:600; color:var(--ink); padding-left:12px; position:sticky; left:0; background:#fff; box-shadow:1px 0 0 var(--line-soft)}
+  .wig-tbl tbody tr:nth-child(even) td.wig-act{background:#FBFCFE}
+  .wig-tbl td.num{text-align:right}
+  .wig-tbl td.t{color:var(--muted); background:#FAFCFE}
+  .wig-tbl td.pct{font-weight:700; text-align:center; min-width:58px}
+  .wig-tbl td.pct.s0{background:#F8D7D4; color:#8E2018}
+  .wig-tbl td.pct.s1{background:#FBD9B8; color:#8A4B06}
+  .wig-tbl td.pct.s2{background:#FCEFB4; color:#7A5C00}
+  .wig-tbl td.pct.s3{background:#CDE9C6; color:#2A5F22}
+  .wig-tbl td.pct.s4{background:#8FD38B; color:#194D16}
+  .wig-tbl td.pct.nil{background:#EEF2F6; color:#9AA6B4}
+  .wig-legend{display:flex; align-items:center; gap:14px; flex-wrap:wrap; font-size:10.5px; color:var(--muted); margin:2px 0 14px}
+  .wig-legend i{display:inline-block; width:13px; height:9px; border-radius:2px; margin-right:5px; vertical-align:-1px}
+  #wig-xls:hover{background:#D8EFE2!important; border-color:#A6D6BC!important}
 </style>
 </head>
 <body>
@@ -435,6 +613,14 @@
   <button class="tab" data-tab="ao">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
     Monitoring AO
+  </button>
+  <button class="tab" data-tab="fdx">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1"/></svg>
+    Monitoring 4DX
+  </button>
+  <button class="tab" data-tab="workplan">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h11l5 5v11H4z"/><path d="M8 12h8"/><path d="M8 16h5"/><path d="M8 8h4"/></svg>
+    Realisasi Workplan
   </button>
 </nav>
 
@@ -674,7 +860,7 @@
 
     <div class="section-h"><span class="bar"></span><h2>Rincian Pekerjaan Pemeliharaan</h2><span class="hint">Klik judul kolom untuk mengurutkan</span></div>
     <div class="table-wrap">
-      <div class="table-head"><span class="tt">Daftar Pekerjaan</span><span id="pm-count"></span></div>
+      <div class="table-head"><span class="tt">Daftar Pekerjaan</span><span id="pm-count"></span><button id="pm-xls" title="Unduh rincian pekerjaan sesuai filter aktif" style="margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-family:inherit;font-size:11.5px;font-weight:700;color:#0F7A3D;background:#E6F5EC;border:1px solid #BFE3CE;border-radius:8px;padding:6px 12px;cursor:pointer">⤓ Unduh Excel</button></div>
       <div class="table-scroll">
         <table>
           <thead>
@@ -720,7 +906,7 @@
     </div>
 
     <div class="table-wrap" style="margin-top:14px">
-      <div class="table-head"><span class="tt">Matriks Realisasi Rabas — ULP × Bulan</span><span class="hint">kms (besar) &amp; batang tebang (kecil)</span></div>
+      <div class="table-head"><span class="tt">Matriks Realisasi Rabas — ULP × Bulan</span><span class="hint">kms (besar) &amp; batang tebang (kecil)</span><button id="rabas-xls" title="Unduh data sesuai filter aktif" style="margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-family:inherit;font-size:11.5px;font-weight:700;color:#0F7A3D;background:#E6F5EC;border:1px solid #BFE3CE;border-radius:8px;padding:6px 12px;cursor:pointer">⤓ Unduh Excel</button></div>
       <div class="table-scroll" style="max-height:none">
         <table class="mx-table">
           <thead><tr id="rabas-matrix-head"></tr></thead>
@@ -783,7 +969,7 @@
 
     <div class="section-h"><span class="bar"></span><h2>Laporan Realisasi Rabas &amp; Tebang Harian per ULP</h2><span class="hint" id="daily-sub">Rincian per tanggal pelaksanaan</span></div>
     <div class="table-wrap">
-      <div class="table-head"><span class="tt">Realisasi Harian — kms (besar) &amp; batang tebang (kecil)</span><span id="daily-count"></span></div>
+      <div class="table-head"><span class="tt">Realisasi Harian — kms (besar) &amp; batang tebang (kecil)</span><span id="daily-count"></span><button id="daily-xls" title="Unduh rincian harian sesuai filter aktif" style="margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-family:inherit;font-size:11.5px;font-weight:700;color:#0F7A3D;background:#E6F5EC;border:1px solid #BFE3CE;border-radius:8px;padding:6px 12px;cursor:pointer">⤓ Unduh Excel</button></div>
       <div class="table-scroll" style="max-height:560px">
         <table class="mx-table">
           <thead><tr id="daily-head"></tr></thead>
@@ -854,6 +1040,116 @@
   </main>
 </div><!-- /view-ao -->
 
+<div id="view-fdx" class="view">
+  <div class="filters">
+    <div class="grp"><label>ULP</label><select id="fdx-f-ulp"></select></div>
+    <div class="grp"><label>Bulan</label><select id="fdx-f-bulan"></select></div>
+    <button class="btn-reset" id="fdx-reset">Reset</button>
+  </div>
+  <main>
+    <div class="titleband">
+      <h1>Monitoring 4DX — UP3 Sorong</h1>
+      <div class="scope">Target &amp; realisasi Lead Measure 2026 per unit layanan · input harian, rekap bulanan, dan capaian terhadap target</div>
+    </div>
+    <div id="fdx-source" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:16px 0 6px"></div>
+    <div class="kpi-grid" id="fdx-kpis"></div>
+
+    <div class="section-h"><span class="bar"></span><h2>Target per Kategori Lead Measure</h2><span class="hint">Bobot tiap kategori terhadap total target unit terpilih</span></div>
+    <div class="fdx-sec-grid" id="fdx-sections"></div>
+
+    <div class="section-h"><span class="bar"></span><h2>Realisasi Harian — Sebulan Penuh</h2><span class="hint">Klik batang untuk berpindah tanggal input</span></div>
+    <div class="panel" id="fdx-trend"></div>
+
+    <div class="section-h"><span class="bar"></span><h2>Capaian Bulanan Antar ULP</h2><span class="hint">Klik kartu untuk memfilter unit</span></div>
+    <div class="fdx-cmp-grid" id="fdx-compare"></div>
+
+    <div class="section-h"><span class="bar"></span><h2>Input &amp; Rincian Realisasi Lead Measure</h2><span class="hint">Isi kolom Realisasi Harian sesuai tanggal terpilih — tersimpan otomatis per ULP</span></div>
+    <div class="table-wrap">
+      <div class="table-head"><span class="tt">Detail Target &amp; Realisasi 4DX</span><span class="muted" id="fdx-tcount"></span><button id="fdx-clear" style="margin-left:auto;font-family:inherit;font-size:11.5px;font-weight:700;color:#B3261E;background:#FDECEA;border:1px solid #F3C9C4;border-radius:8px;padding:6px 12px;cursor:pointer">Hapus Input Bulan Ini</button><button id="fdx-xls" title="Unduh sesuai filter aktif" style="display:inline-flex;align-items:center;gap:6px;font-family:inherit;font-size:11.5px;font-weight:700;color:#0F7A3D;background:#E6F5EC;border:1px solid #BFE3CE;border-radius:8px;padding:6px 12px;cursor:pointer">⤓ Unduh Excel</button></div>
+      <div class="table-scroll">
+        <table id="fdx-tbl">
+          <thead><tr><th>No</th><th>Uraian Kegiatan Lead Measure</th><th>Target 1 Tahun</th><th>Target 1 Bulan</th><th>Target Per Hari</th><th>Realisasi Harian</th><th>Realisasi Bulanan</th><th>Capaian Bulan</th></tr></thead>
+          <tbody id="fdx-body"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="section-h"><span class="bar"></span><h2>Monitoring WIG Keandalan (HAR)</h2><span class="hint">Target vs realisasi per bulan · UP3 Sorong 2026</span><button id="wig-xls" style="margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-family:inherit;font-size:11.5px;font-weight:700;color:#0F7A3D;background:#E6F5EC;border:1px solid #BFE3CE;border-radius:8px;padding:6px 12px;cursor:pointer">⤓ Unduh Excel</button></div>
+    <div id="wig-source" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 12px"></div>
+    <div class="wig-legend">
+      <span><i style="background:#F8D7D4"></i>0%</span>
+      <span><i style="background:#FBD9B8"></i>&lt; 50%</span>
+      <span><i style="background:#FCEFB4"></i>50–79%</span>
+      <span><i style="background:#CDE9C6"></i>80–99%</span>
+      <span><i style="background:#8FD38B"></i>≥ 100%</span>
+      <span><i style="background:#EEF2F6"></i>tanpa target</span>
+    </div>
+    <div class="wig-block" id="wig-h1"></div>
+    <div class="wig-block" id="wig-h2"></div>
+    <div class="wig-block" id="wig-recap"></div>
+  </main>
+</div><!-- /view-fdx -->
+
+<div id="view-workplan" class="view">
+  <div class="filters">
+    <div class="grp"><label>ULP</label><select id="wp-f-ulp"></select></div>
+    <div class="grp"><label>Semester</label><select id="wp-f-sem"></select></div><div class="grp"><label>Bulan</label><select id="wp-f-bulan"></select></div>
+    <div class="grp"><label>Kelompok</label><select id="wp-f-kelompok"></select></div>
+    <div class="grp"><label>Mitra / Vendor</label><select id="wp-f-vendor"></select></div>
+    <div class="grp"><input type="search" id="wp-f-q" placeholder="Cari lead measure, penyulang, vendor…" /></div>
+    <button class="btn-reset" id="wp-reset">Reset</button>
+  </div>
+  <main>
+    <div class="titleband">
+      <h1>Monitoring Realisasi Workplan — UP3 Sorong</h1>
+      <div class="scope">Target workplan 2026 vs realisasi harian pekerjaan distribusi · <b id="wp-scope">—</b></div>
+    </div>
+    <div id="wp-source" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:16px 0 6px"></div>
+    <div class="kpi-grid" id="wp-kpis"></div>
+
+    <div class="section-h"><span class="bar"></span><h2>Grafik Realisasi Workplan</h2><span class="hint">Tren bulanan, capaian antar ULP, komposisi kelompok &amp; beban vendor sesuai filter aktif</span></div>
+    <div class="chart-grid">
+      <div class="panel" style="grid-column:span 2">
+        <h3>Tren Realisasi per Bulan</h3><div class="ph-sub">Batang = realisasi · garis putus = target bulanan (target tahunan ÷ 12)</div>
+        <div class="chart-box tall"><canvas id="wp-ch-bulan"></canvas></div>
+      </div>
+      <div class="panel">
+        <h3>Capaian per ULP</h3><div class="ph-sub">Realisasi terhadap target unit</div>
+        <div class="chart-box tall"><canvas id="wp-ch-ulp"></canvas></div>
+      </div>
+      <div class="panel">
+        <h3>Komposisi Kelompok Pekerjaan</h3><div class="ph-sub">PHB-TM / JTM / Gardu / JTR / SR-APP</div>
+        <div class="chart-box tall"><canvas id="wp-ch-kelompok"></canvas></div>
+      </div>
+      <div class="panel" style="grid-column:span 2">
+        <h3>Realisasi per Mitra / Vendor</h3><div class="ph-sub">10 pelaksana dengan volume tertinggi</div>
+        <div class="chart-box tall"><canvas id="wp-ch-vendor"></canvas></div>
+      </div>
+    </div>
+
+    <div class="section-h"><span class="bar"></span><h2>Rekap Target vs Realisasi per Lead Measure</h2><span class="hint">Dikelompokkan per kategori pekerjaan</span><button id="wp-xls" title="Unduh sesuai filter aktif" style="margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-family:inherit;font-size:11.5px;font-weight:700;color:#0F7A3D;background:#E6F5EC;border:1px solid #BFE3CE;border-radius:8px;padding:6px 12px;cursor:pointer">⤓ Unduh Excel</button></div>
+    <div class="table-wrap">
+      <div class="table-head"><span class="tt">Rekap Workplan</span><span class="muted" id="wp-rekap-count"></span></div>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>No</th><th>Lead Measure</th><th>Satuan</th><th>Target</th><th>Realisasi</th><th>Deviasi</th><th>Capaian</th></tr></thead>
+          <tbody id="wp-rekap-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="section-h"><span class="bar"></span><h2>Detail Realisasi Harian</h2><span class="hint">Entri pekerjaan sesuai filter aktif</span></div>
+    <div class="table-wrap">
+      <div class="table-head"><span class="tt">Detail Entri Workplan</span><span class="muted" id="wp-detail-count"></span></div>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>Tanggal</th><th>ULP</th><th>Penyulang</th><th>Kelompok</th><th>Lead Measure</th><th>Jumlah</th><th>Satuan</th><th>Mitra / Vendor</th></tr></thead>
+          <tbody id="wp-detail-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div><!-- /view-workplan -->
+
 <footer>
   <div>Sumber data: Spreadsheet Monitoring Gangguan FGTM · <b>PLN UP3 Sorong</b> · Tahun 2026. Mitigasi bersifat rekomendasi teknis berdasarkan pola penyebab.</div>
   <div><b>PLN UP3 SORONG</b> × Danantara · Dashboard Pemantauan Gangguan</div>
@@ -879,14 +1175,19 @@
 <script src="js/pemeliharaan.js"></script>
 <script src="js/ao-data.js?v=20260804b"></script>
 <script src="js/ao-app.js?v=20260804b"></script>
+<script src="js/fdx.js?v=20260910e"></script>
+<script src="js/wig.js?v=20260910e"></script>
 <script src="js/mom-weekly.js"></script>
+<script src="js/workplan.js?v=20261002a"></script>
 <script>
   (function(){
     var titles = {
       gangguan: {t:"Monitoring Detail Gangguan FGTM", l:"Gangguan Penyulang / Recloser / PMCB pada jaringan tegangan menengah (SUTM) wilayah kerja UP3 Sorong."},
       pemeliharaan: {t:"Monitoring Pemeliharaan Jaringan", l:"Realisasi pekerjaan pemeliharaan distribusi (PHB-TM / JTM / Gardu / JTR / SR-APP) per ULP \u2014 Juni 2026."},
       row: {t:"Data Aset Jaringan Distribusi & ROW", l:"Inventaris penyulang, panjang JTM, jumlah gardu, serta realisasi Rabas / Tebang (Right of Way) per ULP."},
-      ao: {t:"Monitoring AO (Anggaran Operasi) 2026", l:"Realisasi SKAO vs Terkontrak vs Terbayar per jenis pekerjaan pemeliharaan & operasional distribusi."}
+      ao: {t:"Monitoring AO (Anggaran Operasi) 2026", l:"Realisasi SKAO vs Terkontrak vs Terbayar per jenis pekerjaan pemeliharaan & operasional distribusi."},
+      fdx: {t:"Monitoring 4DX UP3 Sorong", l:"Target Lead Measure 2026 per ULP \u2014 skala tahunan, bulanan, mingguan, dan harian."},
+      workplan: {t:"Monitoring Realisasi Workplan", l:"Realisasi pekerjaan workplan 2026 terhadap target lead measure tiap ULP \u2014 per bulan, kelompok pekerjaan, dan mitra pelaksana."}
     };
     var tabs = document.querySelectorAll(".tab");
     var pmInit = false;
@@ -899,8 +1200,10 @@
       if(meta){ document.getElementById("page-title").textContent = meta.t;
                 document.getElementById("page-legend").textContent = meta.l; }
       if(name==="pemeliharaan" && !pmInit && window.Pemeliharaan){ window.Pemeliharaan.init(); pmInit = true; }
-      if(name==="row" && window.resizeRabasTrend){ setTimeout(window.resizeRabasTrend, 60); setTimeout(window.resizeRabasTrend, 250); }
+      if(name==="row"){ if(window.ROWView) window.ROWView.init(); if(window.resizeRabasTrend){ setTimeout(window.resizeRabasTrend, 60); setTimeout(window.resizeRabasTrend, 250); } }
       if(name==="ao" && window.AOApp){ window.AOApp.init(); }
+      if(name==="fdx" && window.FDX){ window.FDX.init(); if(window.WIG) window.WIG.init(); }
+      if(name==="workplan" && window.Workplan){ window.Workplan.init(); }
       window.scrollTo(0,0);
     }
     tabs.forEach(function(b){ b.addEventListener("click", function(){ activate(b.dataset.tab); }); });
