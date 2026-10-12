@@ -519,6 +519,90 @@
   .wig-legend i{display:inline-block; width:13px; height:9px; border-radius:2px; margin-right:5px; vertical-align:-1px}
   #wig-xls:hover{background:#D8EFE2!important; border-color:#A6D6BC!important}
 </style>
+<style id="ao2-css">
+.ao2-src{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.ao2-hero{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:14px;margin-bottom:14px}
+@media(max-width:980px){.ao2-hero{grid-template-columns:1fr}}
+.ao2-pipe{background:linear-gradient(155deg,var(--navy) 0%,var(--blue-deep) 80%);color:#fff;border-radius:14px;padding:22px 24px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.ao2-pipe .lab{font-size:11px;font-weight:800;letter-spacing:1.1px;text-transform:uppercase;color:var(--yellow)}
+.ao2-pipe .big{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin:8px 0 4px}
+.ao2-pipe .big b{font-size:clamp(28px,3.4vw,40px);font-weight:800;letter-spacing:-1px;font-variant-numeric:tabular-nums}
+.ao2-pipe .big span{font-size:13px;opacity:.85}
+.ao2-bar{display:flex;height:22px;border-radius:7px;overflow:hidden;background:rgba(255,255,255,.12);margin:16px 0 12px}
+.ao2-bar i{display:block;height:100%;min-width:2px}
+.ao2-seg{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+@media(max-width:700px){.ao2-seg{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.ao2-seg div{display:flex;flex-direction:column;gap:2px;min-width:0}
+.ao2-seg small{font-size:10px;text-transform:uppercase;letter-spacing:.4px;opacity:.8;display:flex;align-items:center;gap:6px}
+.ao2-seg small i{width:9px;height:9px;border-radius:3px;flex:none}
+.ao2-seg strong{font-size:15px;font-weight:800;font-variant-numeric:tabular-nums}
+.ao2-seg em{font-style:normal;font-size:11px;opacity:.75}
+.ao2-ring{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:18px 20px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.ao2-ring .c{border-radius:11px;background:#F6F9FC;border:1px solid var(--line-soft,#EDF1F6);padding:12px 14px;display:flex;flex-direction:column;gap:3px}
+.ao2-ring .c b{font-size:26px;font-weight:800;color:var(--navy);line-height:1;font-variant-numeric:tabular-nums}
+.ao2-ring .c span{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+.ao2-ring .c small{font-size:11px;color:var(--muted)}
+.ao2-ring .c.alert{background:#FDECEA;border-color:#F3C9C4}.ao2-ring .c.alert b{color:#B3261E}
+.ao2-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.ao2-span2{grid-column:span 2}
+@media(max-width:1100px){.ao2-grid{grid-template-columns:1fr}.ao2-span2{grid-column:auto}}
+.ao2-ctxcol{display:flex;flex-direction:column;gap:14px}
+.ao2-legend{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px}
+.ao2-legend div{display:flex;flex-direction:column;align-items:center;font-size:11px;color:var(--muted);font-weight:600}
+.ao2-legend b{font-size:18px;color:var(--navy);font-weight:800}
+.ao2-tahapbars{display:flex;flex-direction:column;gap:9px}
+.ao2-tb-top{display:flex;justify-content:space-between;gap:8px;font-size:12px;font-weight:700;color:var(--ink)}
+.ao2-tb-top span:last-child{color:var(--muted);font-weight:600;font-variant-numeric:tabular-nums}
+.ao2-track{height:8px;border-radius:5px;background:#EAF0F6;overflow:hidden;margin-top:4px}
+.ao2-track i{display:block;height:100%;border-radius:5px}
+.ao2-actions{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.ao2-act{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:16px 18px;display:flex;flex-direction:column;gap:10px}
+.ao2-act-h{display:flex;align-items:center;gap:9px}
+.ao2-act-h i{width:10px;height:10px;border-radius:50%;flex:none}
+.ao2-act-h h3{margin:0;font-size:13.5px;font-weight:800;color:var(--navy);flex:1}
+.ao2-act-h span{font-size:11px;font-weight:800;color:var(--navy);background:#EEF3F9;border-radius:999px;padding:3px 10px}
+.ao2-act-sum{font-size:12px;color:var(--muted)}.ao2-act-sum b{color:var(--navy)}
+.ao2-act ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:7px;max-height:260px;overflow:auto}
+.ao2-act li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;font-size:11.5px;line-height:1.35;color:var(--ink);padding:7px 0;border-top:1px dashed var(--line)}
+.ao2-act li small{display:block;color:var(--muted);font-size:10.5px;margin-top:2px}
+.ao2-act li b{font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--navy)}
+.ao2-table td.num,.ao2-table th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.ao2-table td .sub{display:block;font-size:10.5px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-top:2px}
+.ao2-table td .pc{display:block;font-size:10.5px;color:var(--muted);font-weight:600}
+.ao2-table tr.prk{cursor:pointer}
+.ao2-table tr.prk td:first-child{font-weight:700;color:var(--navy)}
+.ao2-table tr.prk td:first-child::before{content:"▸";display:inline-block;width:14px;color:var(--blue);transition:transform .15s}
+.ao2-table tr.prk.open td:first-child::before{transform:rotate(90deg)}
+.ao2-table tr.kids>td{background:#F6F9FC;padding:0}
+.ao2-kids{padding:8px 16px 12px 30px;display:flex;flex-direction:column;gap:6px}
+.ao2-kid{display:grid;grid-template-columns:minmax(0,2.4fr) minmax(0,1.2fr) 110px 110px 92px;gap:10px;align-items:center;font-size:11.5px;padding:6px 0;border-bottom:1px solid var(--line)}
+.ao2-kid:last-child{border-bottom:0}
+.ao2-kid .m{color:var(--muted)}
+.ao2-kid .r{text-align:right;font-variant-numeric:tabular-nums}
+.ao2-stack{display:flex;width:130px;height:9px;border-radius:5px;overflow:hidden;background:#EAF0F6}
+.ao2-stack i{display:block;height:100%}
+.ao2-fis{display:flex;align-items:center;gap:6px;min-width:90px}
+.ao2-fis .ao2-track{flex:1;margin:0}
+.ao2-fis span{font-size:10.5px;font-weight:700;color:var(--muted);width:30px;text-align:right}
+.ao2-chip{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:800;padding:3px 8px;border-radius:999px;white-space:nowrap;letter-spacing:.2px}
+.ao2-chip i{width:6px;height:6px;border-radius:50%}
+.ao2-c-done{background:#E3F6EC;color:#157A43}.ao2-c-done i{background:#1F9D57}
+.ao2-c-prog{background:#E6F0FA;color:#0A4F8F}.ao2-c-prog i{background:#1273C4}
+.ao2-c-none{background:#EEF1F5;color:#5B6573}.ao2-c-none i{background:#9AA6B5}
+.ao2-c-bad{background:#FDECEA;color:#B3261E}.ao2-c-bad i{background:#E2231A}
+.ao2-table tfoot td{background:#EAF2FB;border-top:2px solid var(--blue);font-weight:800;color:var(--navy);padding:10px 12px}
+.ao2-ket{font-size:11px;line-height:1.35;max-width:220px}
+.ao2-ket small{display:block;color:#B3261E;font-weight:700}
+.ao2-ket small.ok{color:var(--muted);font-weight:600}
+.ao2-hut{display:flex;flex-direction:column;gap:10px}
+.ao2-hut .row{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
+.ao2-hut .row b{color:var(--navy);font-variant-numeric:tabular-nums}
+.ao2-gap{list-style:none;margin:6px 0 0;padding:0;display:flex;flex-direction:column;gap:6px}
+.ao2-gap li{display:flex;justify-content:space-between;gap:10px;font-size:11.5px;padding:5px 0;border-bottom:1px dashed var(--line)}
+.ao2-gap li b{font-variant-numeric:tabular-nums;white-space:nowrap}
+.ao2-gap .up{color:#157A43}.ao2-gap .dn{color:#B3261E}
+#view-ao .filters input[type=search]{min-width:220px}
+</style>
 </head>
 <body>
 
@@ -981,63 +1065,41 @@
 </div><!-- /view-row -->
 
 <div id="view-ao" class="view">
-  <main>
-    <div id="ao-source-bar" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px"></div>
-    <div class="kpi-grid" id="ao-kpis"></div>
-
-    <div class="section-h"><span class="bar"></span><h2>Grafik Realisasi Anggaran</h2><span class="hint">Perbandingan SKAO, Terkontrak &amp; Terbayar per pekerjaan</span></div>
-    <div class="chart-grid">
-      <div class="panel" style="grid-column:span 1">
-        <h3>SKAO vs Terkontrak vs Terbayar per Pekerjaan</h3><div class="ph-sub">Nilai dalam Rupiah</div>
-        <div class="chart-box tall"><canvas id="ao-ch-bar"></canvas></div>
-      </div>
-      <div class="panel">
-        <h3>Komposisi Serapan Anggaran</h3><div class="ph-sub">Terbayar vs Belum Terbayar dari Terkontrak</div>
-        <div class="chart-box tall"><canvas id="ao-ch-donut"></canvas></div>
-      </div>
-      <div class="panel">
-        <h3>% Terkontrak per Pekerjaan</h3><div class="ph-sub">Target 100% dari SKAO</div>
-        <div class="chart-box tall"><canvas id="ao-ch-terkontrak"></canvas></div>
-      </div>
-    </div>
-
-    <div class="section-h"><span class="bar"></span><h2>Checklist Progres Pekerjaan</h2><span class="hint">Klik kotak untuk menandai pekerjaan selesai dikontrak · progres mengikuti % Terkontrak</span></div>
-    <div class="checklist" id="ao-checklist"></div>
-    <div class="chk-progress-note" id="ao-chk-note"></div>
-
-    <div class="section-h"><span class="bar"></span><h2>Rincian Realisasi per Pekerjaan</h2><span class="hint">SKAO · Terkontrak · Tagihan · Terbayar · Sisa (Rp)</span></div>
-    <div class="table-wrap">
-      <div class="table-head"><span class="tt">Detail Realisasi AO — UP3 Sorong</span><span class="muted" id="ao-tcount"></span></div>
-      <div class="table-scroll">
-        <table>
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Jenis Kegiatan</th>
-              <th>No PRK</th>
-              <th>SKAO 2026</th>
-              <th>Terkontrak</th>
-              <th>% Terkontrak</th>
-              <th>Tagihan</th>
-              <th>Terbayar</th>
-              <th>% Terbayar</th>
-              <th>Sisa</th>
-            </tr>
-          </thead>
-          <tbody id="ao-tbody"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <div class="section-h"><span class="bar"></span><h2>Evaluasi Akhir Penggunaan Anggaran</h2><span class="hint">Kesimpulan &amp; rekomendasi tindak lanjut serapan AO 2026</span></div>
-    <div class="aset-grid">
-      <div class="verdict-card" id="ao-verdict-card"></div>
-      <div class="panel eval-panel">
-        <h3>Temuan Utama</h3><div class="ph-sub">Berdasarkan pola realisasi tiap pekerjaan</div>
-        <ul class="eval-list" id="ao-eval-list"></ul>
-      </div>
-    </div>
-  </main>
+<div class="filters ao2-filters">
+<div class="grp"><label>Kegiatan</label><select id="ao-f-prk"></select></div>
+<div class="grp"><label>Status</label><select id="ao-f-status"></select></div>
+<div class="grp"><label>Tahap</label><select id="ao-f-tahap"></select></div>
+<div class="grp"><label>Mitra</label><select id="ao-f-mitra"></select></div>
+<div class="grp"><input type="search" id="ao-f-q" placeholder="Cari uraian / no kontrak…"></div>
+<button class="btn-reset" id="ao-reset">Reset</button>
+</div>
+<main>
+<div id="ao-source-bar" class="ao2-src"></div>
+<section class="ao2-hero" id="ao-hero"></section>
+<div class="kpi-grid ao2-kpis" id="ao-kpis"></div>
+<div class="section-h"><span class="bar"></span><h2>Grafik Realisasi Anggaran</h2><span class="hint">Komposisi pagu SKAO, status pekerjaan, mitra &amp; jadwal kontrak</span></div>
+<div class="ao2-grid">
+<div class="panel ao2-span2"><h3>Komposisi Pagu per Kegiatan</h3><div class="ph-sub">Terbayar · Tagihan · Kontrak berjalan · Proses lelang · Sisa — terhadap SKAO tiap PRK</div><div class="chart-box" style="height:430px"><canvas id="ao-ch-stack"></canvas></div></div>
+<div class="panel"><h3>Status Pekerjaan</h3><div class="ph-sub">Jumlah paket kontrak berdasarkan progres lapangan</div><div class="chart-box" style="height:200px"><canvas id="ao-ch-status"></canvas></div><div class="ao2-legend" id="ao-lg-status"></div><h3 style="margin-top:16px">Tahap Administrasi</h3><div class="ph-sub">Nilai kontrak per tahap (Rp)</div><div class="ao2-tahapbars" id="ao-tahap"></div></div>
+<div class="panel ao2-span2"><h3>Nilai Kontrak per Mitra Pelaksana</h3><div class="ph-sub">Terbayar vs belum terbayar · klik batang untuk memfilter tabel</div><div class="chart-box" style="height:360px"><canvas id="ao-ch-mitra"></canvas></div></div>
+<div class="panel"><h3>Jadwal Mulai Kontrak</h3><div class="ph-sub">Nilai kontrak per bulan mulai &amp; kumulatif</div><div class="chart-box" style="height:300px"><canvas id="ao-ch-bulan"></canvas></div><div class="ph-sub" id="ao-bulan-note" style="margin:8px 0 0"></div></div>
+</div>
+<div class="section-h"><span class="bar"></span><h2>Tindak Lanjut</h2><span class="hint">Daftar perhatian dari kolom keterangan &amp; komitmen penyelesaian</span></div>
+<div class="ao2-actions" id="ao-actions"></div>
+<div class="section-h"><span class="bar"></span><h2>Rekap per Kegiatan (PRK)</h2><span class="hint">Klik baris untuk melihat paket kontrak di dalamnya</span></div>
+<div class="table-wrap"><div class="table-head"><span class="tt">Realisasi SKAO 2026 — UP3 Sorong</span><span class="muted" id="ao-tcount"></span></div>
+<div class="table-scroll" style="max-height:none"><table class="ao2-table"><thead><tr><th>Kegiatan / PRK</th><th class="num">SKAO</th><th class="num">Proses Lelang</th><th class="num">Terkontrak</th><th class="num">Tagihan</th><th class="num">Terbayar</th><th class="num">Sisa</th><th>Serapan</th><th class="num">Paket</th></tr></thead><tbody id="ao-tbody"></tbody></table></div></div>
+<div class="section-h"><span class="bar"></span><h2>Detail Kontrak &amp; Status Pekerjaan</h2><span class="hint">Gabungan sheet detail kontrak + status progres · mengikuti filter di atas</span></div>
+<div class="table-wrap"><div class="table-head"><span class="tt">Daftar Paket Pekerjaan</span><span class="muted" id="ao-dcount"></span></div>
+<div class="table-scroll"><table class="ao2-table"><thead><tr><th>#</th><th>Uraian Pekerjaan</th><th>Mitra</th><th>Periode</th><th class="num">Nilai Kontrak</th><th class="num">Tagihan</th><th class="num">Terbayar</th><th>Fisik</th><th>Status</th><th>Tahap</th><th>Keterangan</th></tr></thead><tbody id="ao-dbody"></tbody><tfoot id="ao-dfoot"></tfoot></table></div></div>
+<div class="section-h"><span class="bar"></span><h2>Konteks Pagu AO Distribusi</h2><span class="hint">Rekomposisi pagu tingkat UID &amp; posisi hutang usaha per UP3</span></div>
+<div class="ao2-grid ao2-grid--ctx">
+<div class="panel ao2-span2"><h3>Nilai Awal vs Rekomposisi per Program</h3><div class="ph-sub" id="ao-uid-sub"></div><div class="chart-box" style="height:560px"><canvas id="ao-ch-uid"></canvas></div></div>
+<div class="ao2-ctxcol"><div class="panel" id="ao-hutang"></div><div class="panel" id="ao-uid-gap"></div></div>
+</div>
+<div class="section-h"><span class="bar"></span><h2>Evaluasi Akhir Penggunaan Anggaran</h2><span class="hint">Kesimpulan &amp; rekomendasi tindak lanjut serapan AO 2026</span></div>
+<div class="aset-grid"><div class="verdict-card" id="ao-verdict-card"></div><div class="panel eval-panel"><h3>Temuan Utama</h3><div class="ph-sub">Berdasarkan data kontrak, tagihan &amp; status pekerjaan</div><ul class="eval-list" id="ao-eval-list"></ul></div></div>
+</main>
 </div><!-- /view-ao -->
 
 <div id="view-fdx" class="view">
@@ -1173,8 +1235,9 @@
 <script src="js/app.js"></script>
 <script src="js/pln-data.js"></script>
 <script src="js/pemeliharaan.js"></script>
-<script src="js/ao-data.js?v=20260804b"></script>
-<script src="js/ao-app.js?v=20260804b"></script>
+<script src="js/ao-data.js?v=20261012a"></script>
+<script src="js/ao-snapshot.js?v=20261012a"></script>
+<script src="js/ao-app.js?v=20261012a"></script>
 <script src="js/fdx.js?v=20260910e"></script>
 <script src="js/wig.js?v=20260910e"></script>
 <script src="js/mom-weekly.js"></script>
@@ -1185,7 +1248,7 @@
       gangguan: {t:"Monitoring Detail Gangguan FGTM", l:"Gangguan Penyulang / Recloser / PMCB pada jaringan tegangan menengah (SUTM) wilayah kerja UP3 Sorong."},
       pemeliharaan: {t:"Monitoring Pemeliharaan Jaringan", l:"Realisasi pekerjaan pemeliharaan distribusi (PHB-TM / JTM / Gardu / JTR / SR-APP) per ULP \u2014 Juni 2026."},
       row: {t:"Data Aset Jaringan Distribusi & ROW", l:"Inventaris penyulang, panjang JTM, jumlah gardu, serta realisasi Rabas / Tebang (Right of Way) per ULP."},
-      ao: {t:"Monitoring AO (Anggaran Operasi) 2026", l:"Realisasi SKAO vs Terkontrak vs Terbayar per jenis pekerjaan pemeliharaan & operasional distribusi."},
+      ao: {t:"Monitoring AO (Anggaran Operasi) 2026", l:"Pagu SKAO, pengadaan, kontrak, tagihan & pembayaran per kegiatan dan paket pekerjaan \u2014 data langsung dari spreadsheet."},
       fdx: {t:"Monitoring 4DX UP3 Sorong", l:"Target Lead Measure 2026 per ULP \u2014 skala tahunan, bulanan, mingguan, dan harian."},
       workplan: {t:"Monitoring Realisasi Workplan", l:"Realisasi pekerjaan workplan 2026 terhadap target lead measure tiap ULP \u2014 per bulan, kelompok pekerjaan, dan mitra pelaksana."}
     };
