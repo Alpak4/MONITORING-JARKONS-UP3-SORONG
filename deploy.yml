@@ -1,6 +1,7 @@
 name: Deploy dashboard ke GitHub Pages
 
-# Deploy otomatis setiap kali ada perubahan yang di-push ke branch utama.
+# Deploy otomatis setiap push ke main.
+# Hanya file yang dipakai halaman yang dikirim (index.html, js/, uploads/), lalu diperkecil (minify).
 on:
   push:
     branches: ["main"]
@@ -24,13 +25,46 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Siapkan folder build (_site)
+        run: |
+          mkdir -p _site/js
+          cp index.html _site/
+          cp js/*.js _site/js/
+          [ -d uploads ] && cp -r uploads _site/ || true
+          touch _site/.nojekyll
+
+      - name: Minify JavaScript
+        run: |
+          npx --yes esbuild@0.23.1 _site/js/*.js --minify --target=es2019 --outdir=_site/js --allow-overwrite --log-level=warning
+
+      - name: Minify HTML (CSS & script inline ikut diperkecil)
+        run: |
+          npx --yes html-minifier-terser@7.2.0 \
+            --collapse-whitespace --conservative-collapse \
+            --remove-comments --minify-css true --minify-js true \
+            -o _site/index.min.html _site/index.html \
+          && mv _site/index.min.html _site/index.html \
+          || echo "HTML minify dilewati — memakai index.html asli"
+
+      - name: Ringkasan ukuran
+        run: |
+          echo "Sumber:"; du -ch index.html js/*.js | tail -1
+          echo "Hasil build:"; du -ch _site/index.html _site/js/*.js | tail -1
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Seluruh isi repo (index.html + js/) langsung disajikan.
-          path: "."
+          path: "_site"
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
