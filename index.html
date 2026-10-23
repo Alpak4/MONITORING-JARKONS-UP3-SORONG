@@ -706,6 +706,10 @@
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h11l5 5v11H4z"/><path d="M8 12h8"/><path d="M8 16h5"/><path d="M8 8h4"/></svg>
     Realisasi Workplan
   </button>
+  <button class="tab" data-tab="susut">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"></path><path d="M7 8l4 4 3-3 6 7"></path></svg>
+    Workplan Susut
+  </button>
 </nav>
 
 <div id="view-gangguan" class="view on">
@@ -1212,6 +1216,37 @@
   </main>
 </div><!-- /view-workplan -->
 
+<div id="view-susut" class="view">
+<div class="filters">
+<div class="grp"><label>Bulan</label><select id="ss-f-bulan"></select></div>
+<div class="grp"><label>Kelompok</label><select id="ss-f-kel"></select></div>
+<div class="grp"><label>Kegiatan</label><select id="ss-f-keg" style="max-width:340px"></select></div>
+<button class="btn-reset" id="ss-reset">Reset</button>
+</div>
+<main>
+<div class="titleband" style="padding-left:0;padding-right:0"><div><h1>Workplan Susut — UP3 Sorong</h1><div class="scope">Target WP UIW 2026 vs realisasi kegiatan penurunan susut teknis · <b id="ss-scope">—</b></div></div></div>
+<div id="ss-source" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:16px 0 6px"></div>
+<div class="kpi-grid" id="ss-kpis"></div>
+<div class="section-h"><span class="bar"></span><h2>Grafik Realisasi Workplan Susut</h2><span class="hint">Mengikuti filter aktif · bulan terpilih ditebalkan</span></div>
+<div class="chart-grid">
+<div class="panel" style="grid-column:span 2"><h3>Realisasi per Bulan per Kelompok</h3><div class="ph-sub">Volume kegiatan JTM · Gardu · JTR · SR/APP</div><div class="chart-box tall"><canvas id="ss-ch-bulan"></canvas></div></div>
+<div class="panel"><h3>Komposisi Kelompok</h3><div class="ph-sub">Porsi volume realisasi</div><div class="chart-box tall"><canvas id="ss-ch-kel"></canvas></div></div>
+<div class="panel"><h3>Rehabilitasi / Pemerataan JTM — Target vs Realisasi</h3><div class="ph-sub" id="ss-p-sub">—</div><div class="chart-box tall"><canvas id="ss-ch-p"></canvas></div></div>
+<div class="panel"><h3>Pemeliharaan PHBTR — Target vs Realisasi</h3><div class="ph-sub" id="ss-h-sub">—</div><div class="chart-box tall"><canvas id="ss-ch-h"></canvas></div></div>
+<div class="panel"><h3>Target Bulanan per ULP</h3><div class="ph-sub" id="ss-ulp-sub">—</div><div class="chart-box tall"><canvas id="ss-ch-ulp"></canvas></div></div>
+<div class="panel" style="grid-column:1/-1"><h3>Volume Realisasi per Kegiatan</h3><div class="ph-sub">Diurutkan dari volume tertinggi · warna = kelompok</div><div class="chart-box" id="ss-keg-box"><canvas id="ss-ch-keg"></canvas></div></div>
+</div>
+<div class="section-h"><span class="bar"></span><h2>Matriks Realisasi Kegiatan × Bulan</h2><span class="hint" id="ss-mx-note">—</span><button id="ss-xls" style="margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-family:inherit;font-size:11.5px;font-weight:700;color:#0F7A3D;background:#E6F5EC;border:1px solid #BFE3CE;border-radius:8px;padding:6px 12px;cursor:pointer">⤓ Unduh Excel</button></div>
+<div class="table-wrap"><div class="table-scroll" style="max-height:none"><table class="mx-table"><thead id="ss-mx-head"></thead><tbody id="ss-mx-body"></tbody></table></div></div>
+<div class="section-h"><span class="bar"></span><h2>Detail Entri Realisasi</h2><span class="hint">Sheet SOR · mengikuti filter</span></div>
+<div class="table-wrap"><div class="table-head"><span class="tt">Rincian per Tanggal</span><span class="muted" id="ss-dcount"></span></div><div class="table-scroll" style="max-height:460px"><table><thead><tr><th>Tanggal</th><th>Kelompok</th><th>Kegiatan</th><th class="num">Volume</th></tr></thead><tbody id="ss-dbody"></tbody></table></div></div>
+<div class="section-h"><span class="bar"></span><h2>Rekap Workplan Susut dari Data Realisasi Workplan</h2><span class="hint">Lead measure menu Realisasi Workplan yang masuk kategori kegiatan susut · dibandingkan dengan sheet SOR</span></div>
+<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 12px"><div id="ss-wp-src" style="display:flex;gap:8px;flex-wrap:wrap"></div><div class="filters" style="position:static;padding:0;background:none;border:0;margin-left:auto"><div class="grp"><label>ULP</label><select id="ss-wp-ulp"></select></div><button id="ss-wp-xls" style="display:inline-flex;align-items:center;gap:6px;font-family:inherit;font-size:11.5px;font-weight:700;color:#0F7A3D;background:#E6F5EC;border:1px solid #BFE3CE;border-radius:8px;padding:6px 12px;cursor:pointer">⤓ Unduh Excel</button></div></div>
+<div class="table-wrap"><div class="table-head"><span class="tt">Matriks Kegiatan Susut × Bulan — dari Realisasi Workplan</span><span class="muted">Selisih = Total WP − Sheet SOR (periode filter)</span></div><div class="table-scroll" style="max-height:none"><table class="mx-table"><thead id="ss-wp-head"></thead><tbody id="ss-wp-body"></tbody></table></div></div>
+<div class="table-wrap" style="margin-top:14px"><div class="table-head"><span class="tt">Pemetaan Lead Measure Workplan → Kegiatan Susut</span><span class="muted" id="ss-map-count"></span><div style="margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap"><input type="search" id="ss-map-q" placeholder="Cari lead measure…" style="min-width:200px;padding:6px 10px;font-size:12px" /><select id="ss-map-show" style="padding:6px 10px;font-size:12px"><option value="">Semua</option><option value="in">Masuk kategori</option><option value="out">Di luar kategori</option><option value="man">Pemetaan manual</option></select><button id="ss-map-reset" style="display:none;align-items:center;font-family:inherit;font-size:11.5px;font-weight:700;color:#B3261E;background:#FDECEA;border:1px solid #F3C9C4;border-radius:8px;padding:6px 12px;cursor:pointer">Reset Manual</button></div></div><div class="ph-sub" style="padding:8px 18px 0;margin:0">Ubah kategori pada kolom <b>Kategori Kegiatan Susut</b> untuk menambah / mengoreksi pemetaan — rekap di atas dihitung ulang otomatis &amp; tersimpan di browser ini.</div><div class="table-scroll" style="max-height:460px"><table><thead><tr><th>Lead Measure (Workplan)</th><th>Kelompok WP</th><th>Satuan</th><th>Kategori Kegiatan Susut</th><th class="num">Entri</th><th class="num">Volume</th></tr></thead><tbody id="ss-map-body"></tbody></table></div></div>
+</main>
+</div><!-- /view-susut -->
+
 <footer>
   <div>Sumber data: Spreadsheet Monitoring Gangguan FGTM · <b>PLN UP3 Sorong</b> · Tahun 2026. Mitigasi bersifat rekomendasi teknis berdasarkan pola penyebab.</div>
   <div><b>PLN UP3 SORONG</b> × Danantara · Dashboard Pemantauan Gangguan</div>
@@ -1225,23 +1260,24 @@
   </svg>
 </template>
 
-<script src="image-slot.js?v=20261019a"></script>
-<script src="data_csv.js?v=20261019a"></script>
-<script src="data.js?v=20261019a"></script>
-<script src="mitigasi.js?v=20261019a"></script>
-<script src="rabas.js?v=20261019a"></script>
-<script src="aset_jaringan.js?v=20261019a"></script>
-<script src="charts.js?v=20261019a"></script>
-<script src="app.js?v=20261019a"></script>
-<script src="pln-data.js?v=20261019a"></script>
-<script src="pemeliharaan.js?v=20261019a"></script>
-<script src="ao-data.js?v=20261019a"></script>
-<script src="ao-snapshot.js?v=20261019a"></script>
-<script src="ao-app.js?v=20261019a"></script>
-<script src="fdx.js?v=20261019a"></script>
-<script src="wig.js?v=20261019a"></script>
-<script src="mom-weekly.js?v=20261019a"></script>
-<script src="workplan.js?v=20261019a"></script>
+<script src="image-slot.js"></script>
+<script src="data_csv.js"></script>
+<script src="data.js"></script>
+<script src="mitigasi.js"></script>
+<script src="rabas.js"></script>
+<script src="aset_jaringan.js"></script>
+<script src="charts.js"></script>
+<script src="app.js"></script>
+<script src="pln-data.js"></script>
+<script src="pemeliharaan.js"></script>
+<script src="ao-data.js?v=20261012a"></script>
+<script src="ao-snapshot.js?v=20261012a"></script>
+<script src="ao-app.js?v=20261012a"></script>
+<script src="fdx.js?v=20260910e"></script>
+<script src="wig.js?v=20260910e"></script>
+<script src="mom-weekly.js"></script>
+<script src="workplan.js?v=20261002a"></script>
+<script src="susut.js?v=20261023e"></script>
 <script>
   (function(){
     var titles = {
@@ -1250,6 +1286,7 @@
       row: {t:"Data Aset Jaringan Distribusi & ROW", l:"Inventaris penyulang, panjang JTM, jumlah gardu, serta realisasi Rabas / Tebang (Right of Way) per ULP."},
       ao: {t:"Monitoring AO (Anggaran Operasi) 2026", l:"Pagu SKAO, pengadaan, kontrak, tagihan & pembayaran per kegiatan dan paket pekerjaan \u2014 data langsung dari spreadsheet."},
       fdx: {t:"Monitoring 4DX UP3 Sorong", l:"Target Lead Measure 2026 per ULP \u2014 skala tahunan, bulanan, mingguan, dan harian."},
+      susut: {t:"Monitoring Workplan Susut", l:"Target WP UIW 2026 & realisasi kegiatan penurunan susut teknis UP3 Sorong \u2014 sheet WP UIW Target 2026 & SOR."},
       workplan: {t:"Monitoring Realisasi Workplan", l:"Realisasi pekerjaan workplan 2026 terhadap target lead measure tiap ULP \u2014 per bulan, kelompok pekerjaan, dan mitra pelaksana."}
     };
     var tabs = document.querySelectorAll(".tab");
@@ -1267,6 +1304,7 @@
       if(name==="ao" && window.AOApp){ window.AOApp.init(); }
       if(name==="fdx" && window.FDX){ window.FDX.init(); if(window.WIG) window.WIG.init(); }
       if(name==="workplan" && window.Workplan){ window.Workplan.init(); }
+      if(name==="susut" && window.Susut){ window.Susut.init(); }
       window.scrollTo(0,0);
     }
     tabs.forEach(function(b){ b.addEventListener("click", function(){ activate(b.dataset.tab); }); });
