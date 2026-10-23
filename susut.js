@@ -23,8 +23,32 @@ window.Susut = (function(){
   const nrm=s=>String(s||"").toUpperCase().replace(/\s+/g," ").trim();
   const wnum=v=>{let s=String(v==null?"":v).replace(/[^0-9,.\-]/g,"").trim();if(!s||s==="-")return 0;s=s.indexOf(",")!==-1?s.replace(/\./g,"").replace(",","."):s.replace(/\./g,"");const n=parseFloat(s);return isNaN(n)?0:n;};
   const wkel=v=>{const n=nrm(v).replace(/[\s-]/g,"");return n.startsWith("PHBTM")?"PHBTM":n.startsWith("JTM")?"JTM":n.startsWith("GARDU")?"GARDU":n.startsWith("JTR")?"JTR":n.startsWith("SR")?"SR-APP":"LAINNYA";};
-  /* klasifikasi lead measure workplan → kegiatan susut (urutan = prioritas) */
+  /* pemetaan eksplisit berdasarkan daftar lead measure aktual sheet Realisasi Workplan (Okt 2026) */
+  const MAPX=[
+    [1,["UPRATING KONDUKTOR","PERBAIKAN ANDONGAN"]],
+    [2,["PEMASANGAN JUMPERAN TRAFO","PEMELIHARAAN JUMPERAN M7 ( JOINISASI )","PENGAMANAN JUMPERAN TRAFO","PERBAIKAN JUMPERAN","PERBAIKAN JUMPERAN FCO GD KOHOIN","PERBAIKAN JUMPERAN FLASH OVER","PERBAIKAN JUMPERAN M7","PERBAIKAN JUMPERAN SUTM","PERBAIKAN SAMBUNGAN SUTM","PERBAIKAN KAWAT RANTAS","PERBAIKAN TERMINASI MAK PLTD KLASAMAN","PENGGANTIAN TERMINASI","PENGGANTIAN TERMINASI KUBIKEL PEL. RAMAYANA","TERMINASI INCOMING TRAFO"]],
+    [3,["GANTI ISOLATOR 1","PENGGANTIAN ISOLATOR RUSAK","PENGGANTIAN ISOLATOR TARIK","PENGGANTIAN ISOLATOR TUMPU","PENGGANTIAN ISOLATOR TUMPU BERDESIS","PERBAIKAN ISOLATOR JATUH","PENGGANTIAN ARRESTER","PENGGANTIAN ARRESTER TRAFO","PENGGANTIAN LA JARINGAN","PENGGANTIAN LA GARDU"]],
+    [6,["PEMBANGUNAN GARSIP","PEMASANGAN GARSIP","PENGOPERASIAN GARDU SISIP SRIKANDI"]],
+    [7,["MANAJEMEN/MUTASI TRAFO","ROTASI TRAFO","PENGGANTIAN TRAFO","PENGGANTIAN TRAFO MEREMBES SRG073","PENGGANTIAN TRAFO MEREMBES SRG264","PENGGANTIAN TRAFO MEREMBES SRG488"]],
+    [8,["MENAIKKAN TAP CHANGER TRAFO DISTRIBUSI"]],
+    [9,["PENYEIMBANGAN BEBAN","PEMERATAAN BEBAN GARDU","PEMERATAAN BEBAN DAN MANUVER JTR"]],
+    [10,["PEMELIHARAAN PHBTR","PEMELIHARAAN PHBTR SRG152-1","PEMELIHARAAN PHBTR SRG325","PEMELIHARAAN PINTU PHBTR KROPOS","PERBAIKAN PHBTR","PERBAIKAN PINTU PHBTR","SERVIS PANEL PHBTR","PERBAIKAN FUSE HOLDER","PENYESUAIAN RATING (NH FUSE)","PENGGANTIAN DUDUKAN PHBTR","PEMELIHARAAN SEKUNDER TRAFO","PENGGANTIAN OUT GOING GARDU","PENGGANTIAN OUTGOING 232","PENGGANTIAN OUTGOING SRG123","PENGGANTIAN IN / OUT GARDU"]],
+    [11,["PENGGANTIAN PHBTR","PENGGANTIAN PHBTR RUSAK"]],
+    [12,["PERBAIKAN GROUNDING GARDU"]],
+    [13,["PEMASANGAN OUT GOING JURUSAN","PEMBAGIAN GRUP GARDU"]],
+    [14,["JOINISASI/PERBAIKAN SAMBUNGAN (JTR)","PENGGANTIAN TAP KONEKTOR MENJADI KONEKTOR PRESS","PENGGANTIAN AKSESORIS TARIKAN (JTR)","PEMASANGAN KUMIS (JTR)","PERBAIKAN ANDONGAN (JTR)","PERBAIKAN ANDONGAN JTR"]],
+    [15,["PERBAIKAN SR DERET","MANUVER SR DERET KE TIANG JTR BARU","PEMELIHARAN SR DERET KE JTR","MANUVER SR KE JTR BARU","PINDAH SR KE JTR BARU","PEMINDAHAN SR KE JTR BARU"]],
+    [16,["PERBAIKAN SR MODERN CITY"]],
+    [-1,["PENGUKURAN BEBAN","PERBAIKAN ANDONGAN GSW","PEMASANGAN COVER LA & BUSHING GARDU","PENGGANTIAN FCO","PENGGANTIAN FCO TUA","PERBAIKAN FCO K=JARING","PEMASANGAN SR","PEMBONGKARAN SR"]]
+  ];
+  const MKEY=s=>String(s||"").toUpperCase().replace(/[^A-Z0-9]/g,"");
+  const MAPI={};MAPX.forEach(([i,a])=>a.forEach(n=>{MAPI[MKEY(n)]=i;}));
+  /* pemetaan permanen hasil koreksi manual (23 Okt 2026) — prioritas tertinggi */
+  const MAPP={"PEMELIHARAAN KUBIKEL":2,"PERBAIKAN SUTM AKIBAT POHON KERING RUBUH":2,"PEMASANGAN DS":2,"PENGGANTIAN DS":2,"RUBAH KONSTRUKSI JTM":2,"RELOKASI LBS":2,"PEMASANGAN LBS":2,"PENGGANTIAN FCO TUA":3,"MANUVER BEBAN LISDES MAKBON. JTM BARU":0,"RELOKASI RECLOSER":2,"PEMELIHARAAN SUTM":1,"BONGKAR TIANG TM":1,"PERBAIKAN MONTING FCO GD SRG524":3,"OPERASIKAN LBS KRISBOW":2,"PENGGANTIAN MEKANIK KUBIKEL":2,"PEMASANGAN FCO":3,"PEMBONGKARAN INSTALASI UGB 400KVA":2,"MANUVER KABEL SR KE TIANG SUTM BARU":0,"PEMEIHARAAN & PENGOPERASIAN GARDU":10,"PENGOPERASIAN TRAFO":6,"PEKERJAAN MVTIC":2,"BONGKAR TRAFO 50 KVA":7,"OPERASIKAN GARDU":6,"MANUVER BEBAN GD":9,"PEMASANGAN UNIT GARDU BERGERAK ( UGB ) 400 KVA":7,"PEMBONGKARAN UNIT GARDU BERGERAK ( UGB ) 400 KVA":7,"PEMELIHARAAN SUTR":14,"PEMELIHARAAN JTR":14,"MANUVER BEBAN JTR":13,"PEMASANGAN SR":16,"PEMBONGKARAN SR":16,"PEMELIHARAAN TIANG JTR":14,"MANUVER BEBAN TRAFO":7,"PERBAIKAN TEGANGAN DROP":15,"PERBAIKAN TEGANGAN TIDAK STABIL":15,"MANUVER BEBAN GARDU":7,"PENGOPRASIAN GARDU DAN MANUVER BEBAN GARDU":7,"PERBAIKAN JTR":14,"PINDAH KABEL SUTR":14,"EMERGENCY SUTR TERBAKAR":14,"PERLUASAN JTR":13,"PEKERJAAN JTR":14,"PERBAIKAN KABEL JTR JATUH":14,"PEMASANGA JTR":13,"PEMBANGUNAN JTR SAMPING THIO":13,"PEMELIHARAAN JTR PUTUS":14,"PENGOPERASIAN JTR BARU":13,"PERBAIKAN JTR JATUH":14,"MANUVER BEBAN":9,"PENGOPERASIAN JTR":13,"PENGGANTIAN JTR KROPOS/TERBAKAR":14,"PERBAIKAN JTR TERTIMPA POHON":14,"PERBAIKAN TIANG TR":14,"PERBAIKAN JTR KANAL VIKTORY":14,"MANUVER BEBAN MODEREN CITY":13,"PEMASANGAN JTR":13,"PERLUASAN JTR LISDES SOOP,TEGANGAN DROP":13,"BONGKAR TIANG EKSISTING + PINDAH JTR":14,"PERBAIKAN TIANG JTR RUBUH":14,"PENGGANTIAN FCO":3,"KONSTRUKSI JTM":1,"PERBAIKAN SUTM GIWU":1,"PEMELIHARAAN TIANG TM":1,"PENGOPERASIAN LBS":2,"BONGKAR FCO JAR":3,"PERBAIKAN STARAINCLAM M7 TERBALIK":2,"PERBAIKAN JTR KEROPOS":14,"PERLUASAN PEMELIHARAAN JTR":13,"PENGOPERASIAN UPS MOBILE WALIKOTA":7,"BONGKAR UPS MOBILE 30KVA WALIKOTA":7,"BONGKAR UPS MOBILE 250KVA WALIKOTA":7};
+  Object.keys(MAPP).forEach(n=>{MAPI[MKEY(n)]=MAPP[n];});
+  /* klasifikasi lead measure workplan → kegiatan susut (pemetaan eksplisit dulu, lalu pola; urutan = prioritas) */
   function classify(lm,kel){
+    const mk=MKEY(lm);if(MAPI[mk]!=null)return MAPI[mk];
     const t=nrm(lm), J=kel==="JTR", SR=kel==="SR-APP";
     const R=[[/CLUSTER/,17],[/\bSR\b.*SERI|SERI BANYAK|\bDERET\b/,15],[/TAP\s*CHANGER|NAIK.*\bTAP\b|\bTAP\b.*TRAFO/,8],[/KAPASITOR|CAPACITOR/,5],[/\bAVR\b|VOLTAGE REGULATOR/,4],[/SISIPAN/,6],[/JURUSAN BARU|PECAH\w*\s+JURUSAN|PEMECAHAN.*JURUSAN/,13],[/PENYULANG BARU|PECAH\w*\s+PENYULANG|PEMECAHAN.*PENYULANG/,0],[/SEIMBANG|BALANC|PEMERATAAN BEBAN|UNBALANCE/,9],[/ISOLATOR|ARRESTER|\bLA\b/,3],[/UPRATING\s+KONDUKTOR|(UPRATING|DOWNRATING).*(KONDUKTOR|KAWAT|JTM)/,1],[/MANAJEMEN TRAFO|MUTASI TRAFO|ROTASI TRAFO|(UPRATING|DOWNRATING).*TRAFO|TRAFO.*(UPRATING|DOWNRATING)|(GANTI|PENGGANTIAN)\s.*TRAFO/,7],[/GROUNDING|PENTANAHAN|\bARDE\b/,12],[/(GANTI|PENGGANTIAN|PASANG|PEMASANGAN)\s.*(PHB.?TR|LEMARI)/,11],[/PHB.?TR|OPSTIK/,10]];
     for(const [re,i] of R) if(re.test(t)) return i;
@@ -42,13 +66,13 @@ window.Susut = (function(){
     const out=[];
     starts.forEach(c=>{for(let i=1;i<rows.length;i++){const r=rows[i]||[];const lm=(r[c+6]||"").trim(),ulp=nrm(r[c+3]);if(!lm||!ulp||/FAK\s*FAK|KAIMANA/.test(ulp))continue;
       const bi=WP_MONTHS.indexOf(nrm(r[c+1]));const kl=wkel(r[c+5]);
-      out.push({m:bi,ulp,penyulang:(r[c+4]||"").trim(),kel:kl,lm,key:nrm(lm),v:wnum(r[c+7]),sat:(r[c+8]||"").trim(),auto:classify(lm,kl),k:-1});}});
+      out.push({m:bi,d:parseInt(String(r[c]||"").replace(/[^0-9]/g,""))||0,ulp,penyulang:(r[c+4]||"").trim(),kel:kl,lm,key:nrm(lm),v:wnum(r[c+7]),sat:(r[c+8]||"").trim(),auto:classify(lm,kl),k:-1});}});
     return out.length?out:null;
   }
   const OVK="susut_map_override_v1";
   let OV={};try{OV=JSON.parse(localStorage.getItem(OVK)||"{}")||{};}catch(e){OV={};}
   const saveOV=()=>{try{localStorage.setItem(OVK,JSON.stringify(OV));}catch(e){}};
-  function applyOV(){if(W)W.forEach(d=>{d.k=OV[d.key]!=null?OV[d.key]:d.auto;});}
+  function applyOV(){if(!W)return;let ch=false;W.forEach(d=>{if(OV[d.key]!=null&&OV[d.key]===d.auto){delete OV[d.key];ch=true;}d.k=OV[d.key]!=null?OV[d.key]:d.auto;});if(ch)saveOV();}
   const KEL_ORD=["PHBTM","JTM","GARDU","JTR","SR-APP","LAINNYA"];const KO=k=>{const i=KEL_ORD.indexOf(k);return i<0?99:i;};
   let W=null;
 
@@ -163,6 +187,7 @@ window.Susut = (function(){
     });
     html+='<tr class="total-row"><td></td><td>TOTAL</td>'+tA.map(v=>'<td class="num">'+(v?fmt(v):"·")+'</td>').join("")+'<td class="num">'+fmt(tW)+'</td><td class="num">'+fmt(tS)+'</td>'+dif(tW-tS)+'</tr>';
     $("ss-wp-body").innerHTML=html;
+    wpDaily(f,D);
     // pemetaan lead measure
     const G={};D.filter(d=>f.b==null||d.m===f.b).forEach(d=>{const o=G[d.key]||(G[d.key]={key:d.key,lm:d.lm,kel:d.kel,sat:d.sat,k:d.k,auto:d.auto,n:0,v:0});o.n++;o.v+=d.v;});
     const q=($("ss-map-q").value||"").toLowerCase(),sh=$("ss-map-show").value;
@@ -175,6 +200,80 @@ window.Susut = (function(){
     let lastKel=null;
     $("ss-map-body").innerHTML=L.map(o=>{const man=OV[o.key]!=null;let hd="";if(o.kel!==lastKel){lastKel=o.kel;const grp=L.filter(x=>x.kel===o.kel);hd='<tr class="wp-sub"><td colspan="4">'+esc(o.kel)+' <span class="muted" style="font-weight:600">· '+grp.length+' lead measure · '+grp.filter(x=>x.k>=0).length+' masuk kategori</span></td><td class="num">'+fmt(grp.reduce((s,x)=>s+x.n,0))+'</td><td class="num">'+fmt(grp.reduce((s,x)=>s+x.v,0))+'</td></tr>';}return hd+'<tr'+(o.k<0&&!man?' style="opacity:.6"':'')+'><td>'+esc(o.lm)+'</td><td>'+esc(o.kel)+'</td><td>'+esc(o.sat)+'</td><td><div style="display:flex;align-items:center;gap:7px">'+(o.k>=0?'<span class="cdot" style="background:'+GCOL[GRP[o.k]]+'"></span>':'<span class="cdot" style="background:#D6DEE8"></span>')+'<select class="ss-map-sel" data-key="'+esc(o.key)+'" data-auto="'+o.auto+'" style="max-width:340px;padding:5px 8px;font-size:12px'+(man?';border-color:var(--yellow);background:#FFF8E6':'')+'">'+opts(o.k)+'</select>'+(man?'<span class="wp-pill" style="color:#8A6A00;background:#FFF6DF;border-color:#F2E0AE;padding:3px 8px">Manual</span><button class="ss-map-undo" data-key="'+esc(o.key)+'" title="Kembalikan ke otomatis" style="font:inherit;font-size:11px;font-weight:700;color:var(--muted);background:none;border:0;cursor:pointer">↺</button>':'')+'</div></td><td class="num">'+fmt(o.n)+'</td><td class="num"><b>'+fmt(o.v)+'</b></td></tr>';}).join("")||'<tr><td colspan="6" class="muted" style="text-align:center;padding:24px">Tidak ada data.</td></tr>';
     S.wpCache={D,WM};
+  }
+
+  let WD={m:null,day:null};
+  function wpDaily(f,D){
+    const ms=[...new Set(D.filter(d=>d.k>=0).map(d=>d.m))].sort((a,b)=>a-b);
+    let m=f.b!=null?f.b:(WD.m!=null?WD.m:(ms.length?ms[ms.length-1]:new Date().getMonth()));
+    $("ss-wd-bulan").innerHTML=MONL.map((n,i)=>'<option value="'+i+'"'+(i===m?" selected":"")+'>'+n+(ms.includes(i)?"":" (belum ada data)")+'</option>').join("");
+    $("ss-wd-bulan").disabled=f.b!=null;
+    const nd=new Date(2026,m+1,0).getDate(),days=[...Array(nd).keys()].map(i=>i+1);
+    const R=D.filter(d=>d.k>=0&&keep(f,d.k)&&d.m===m);
+    const X=KEG.map(()=>Array(nd+1).fill(0));let nodate=0;R.forEach(d=>{if(d.d>=1&&d.d<=nd)X[d.k][d.d]+=d.v;else{X[d.k][0]+=d.v;nodate++;}});
+    const dow=d=>new Date(2026,m,d).getDay(),we=d=>dow(d)===0;
+    const sel=WD.day;
+    const th=d=>'<th class="num'+(sel===d?" mx-sel":"")+'" style="min-width:30px;padding-left:4px;padding-right:4px'+(we(d)?';color:#B81910':'')+'">'+d+'</th>';
+    $("ss-wd-head").innerHTML='<tr><th>No</th><th>Kegiatan Susut</th>'+days.map(th).join("")+(nodate?'<th class="num" title="Entri tanpa tanggal">?</th>':'')+'<th class="num">Total</th></tr>';
+    const td=(v,d,k)=>'<td class="num'+(sel===d?" mx-sel":"")+'" style="padding-left:4px;padding-right:4px'+(v?';cursor:pointer':';color:#B8C2CE')+(we(d)?';background:#FBF6F6':'')+'"'+(v?' data-wd="'+d+'"':'')+'>'+(v?fmt(v):"·")+'</td>';
+    let html="",no=0;const tot=Array(nd+1).fill(0);
+    GROUPS.forEach(g=>{
+      if(f.g&&f.g!==g)return;
+      const idx=KEG.map((k,i)=>i).filter(i=>GRP[i]===g&&keep(f,i));if(!idx.length)return;
+      const sub=Array(nd+1).fill(0);let rows="";
+      idx.forEach(i=>{no++;const row=X[i];row.forEach((v,d)=>{sub[d]+=v;tot[d]+=v;});const t=row.reduce((a,b)=>a+b,0);
+        rows+='<tr><td class="muted">'+no+'</td><td style="min-width:240px">'+esc(KEG[i])+'</td>'+days.map(d=>td(row[d],d)).join("")+(nodate?td(row[0],0):'')+'<td class="num"><b>'+(t?fmt(t):"·")+'</b></td></tr>';});
+      const st=sub.reduce((a,b)=>a+b,0);
+      html+='<tr class="wp-sub"><td></td><td><span class="cdot" style="background:'+GCOL[g]+';margin-right:7px"></span>'+g+'</td>'+days.map(d=>'<td class="num'+(sel===d?" mx-sel":"")+'" style="padding-left:4px;padding-right:4px">'+(sub[d]?fmt(sub[d]):"·")+'</td>').join("")+(nodate?'<td class="num">'+(sub[0]?fmt(sub[0]):"·")+'</td>':'')+'<td class="num">'+fmt(st)+'</td></tr>'+rows;
+    });
+    const T=tot.reduce((a,b)=>a+b,0);
+    html+='<tr class="total-row"><td></td><td>TOTAL</td>'+days.map(d=>'<td class="num" style="padding-left:4px;padding-right:4px">'+(tot[d]?fmt(tot[d]):"·")+'</td>').join("")+(nodate?'<td class="num">'+(tot[0]?fmt(tot[0]):"·")+'</td>':'')+'<td class="num">'+fmt(T)+'</td></tr>';
+    $("ss-wd-body").innerHTML=html;
+    WD.cache={f,m,D};
+    const hari=days.filter(d=>tot[d]>0).length;
+    $("ss-wd-count").textContent=MONL[m]+" 2026 · "+fmt(R.length)+" entri · "+hari+" hari input · volume "+fmt(T)+(nodate?" · "+nodate+" entri tanpa tanggal":"");
+    const L=R.filter(d=>sel==null||(sel===0?!(d.d>=1&&d.d<=nd):d.d===sel)).sort((a,b)=>a.d-b.d||a.k-b.k||b.v-a.v);
+    $("ss-wd-dtitle").textContent=sel==null?"Rincian Entri Harian — "+MONL[m]:"Rincian Entri — "+(sel===0?"tanpa tanggal":sel+" "+MONL[m]+" 2026");
+    $("ss-wd-dcount").textContent=L.length+" entri";
+    $("ss-wd-clear").style.display=sel==null?"none":"inline-flex";
+    const cap=500;
+    $("ss-wd-dbody").innerHTML=L.length?L.slice(0,cap).map(d=>'<tr><td class="nowrap">'+(d.d?d.d+" "+MON[d.m]:"—")+'</td><td>'+esc(d.ulp)+'</td><td>'+esc(d.penyulang||"—")+'</td><td>'+esc(d.lm)+'</td><td><span class="cdot" style="background:'+GCOL[GRP[d.k]]+';margin-right:7px"></span>'+esc(KEG[d.k])+'</td><td class="num"><b>'+fmt(d.v)+'</b></td><td>'+esc(d.sat)+'</td></tr>').join("")+(L.length>cap?'<tr><td colspan="7" class="muted" style="text-align:center">+'+(L.length-cap)+' entri lainnya — unduh Excel untuk data lengkap</td></tr>':''):'<tr><td colspan="7" class="muted" style="text-align:center;padding:24px">Belum ada entri kegiatan susut untuk bulan ini.</td></tr>';
+  }
+
+  function wdXls(all){
+    if(!WD.cache)return;const {f,m:mSel,D}=WD.cache;
+    const cS=v=>'<Cell><Data ss:Type="String">'+esc(v)+'</Data></Cell>',cN=v=>'<Cell><Data ss:Type="Number">'+(Math.round(v*100)/100)+'</Data></Cell>',cB=v=>'<Cell ss:StyleID="b"><Data ss:Type="String">'+esc(v)+'</Data></Cell>',cBN=v=>'<Cell ss:StyleID="b"><Data ss:Type="Number">'+(Math.round(v*100)/100)+'</Data></Cell>';
+    const u=$("ss-wp-ulp").value,scope=(u?"ULP "+u:"Semua ULP")+(f.g?" · Kelompok "+f.g:"")+(f.k!=null?" · "+KEG[f.k]:"");
+    const R0=D.filter(d=>d.k>=0&&keep(f,d.k));
+    const sh=(nm,rr)=>'<Worksheet ss:Name="'+nm+'"><Table>'+rr.map(r=>"<Row>"+r.join("")+"</Row>").join("")+'</Table></Worksheet>';
+    const monthSheet=m=>{
+      const nd=new Date(2026,m+1,0).getDate(),days=[...Array(nd).keys()].map(i=>i+1),R=R0.filter(d=>d.m===m);
+      const X=KEG.map(()=>Array(nd+1).fill(0));let nodate=0;R.forEach(d=>{if(d.d>=1&&d.d<=nd)X[d.k][d.d]+=d.v;else{X[d.k][0]+=d.v;nodate++;}});
+      const rows=[[cB("INPUT HARIAN KEGIATAN SUSUT — DARI REALISASI WORKPLAN · UP3 SORONG")],[cS(MONL[m]+" 2026 · "+scope+" · "+R.length+" entri")],[],[cB("No"),cB("Kelompok"),cB("Kegiatan Susut"),...days.map(d=>cB(String(d))),...(nodate?[cB("Tanpa Tgl")]:[]),cB("Total")]];
+      let no=0;const tot=Array(nd+1).fill(0);
+      GROUPS.forEach(g=>{if(f.g&&f.g!==g)return;const idx=KEG.map((k,i)=>i).filter(i=>GRP[i]===g&&keep(f,i));if(!idx.length)return;
+        const sub=Array(nd+1).fill(0);idx.forEach(i=>X[i].forEach((v,d)=>sub[d]+=v));
+        rows.push([cB(""),cB(g),cB("Subtotal "+g),...days.map(d=>cBN(sub[d])),...(nodate?[cBN(sub[0])]:[]),cBN(sub.reduce((a,b)=>a+b,0))]);
+        idx.forEach(i=>{no++;const r=X[i];r.forEach((v,d)=>tot[d]+=v);rows.push([cN(no),cS(g),cS(KEG[i]),...days.map(d=>cN(r[d])),...(nodate?[cN(r[0])]:[]),cN(r.reduce((a,b)=>a+b,0))]);});});
+      rows.push([cB(""),cB(""),cB("TOTAL"),...days.map(d=>cBN(tot[d])),...(nodate?[cBN(tot[0])]:[]),cBN(tot.reduce((a,b)=>a+b,0))]);
+      return sh(MONL[m],rows);};
+    const detail=(nm,R)=>{const r2=[[cB("Tanggal"),cB("Bulan"),cB("ULP"),cB("Penyulang"),cB("Kelompok WP"),cB("Lead Measure WP"),cB("Kelompok Susut"),cB("Kegiatan Susut"),cB("Volume"),cB("Satuan")]];
+      [...R].sort((a,b)=>a.m-b.m||a.d-b.d||a.k-b.k).forEach(d=>r2.push([d.d?cN(d.d):cS("—"),cS(MONL[d.m]),cS(d.ulp),cS(d.penyulang),cS(d.kel),cS(d.lm),cS(GRP[d.k]),cS(KEG[d.k]),cN(d.v),cS(d.sat)]));return sh(nm,r2);};
+    let body,fname;
+    if(all){
+      const rk=[[cB("REKAP BULANAN KEGIATAN SUSUT — DARI REALISASI WORKPLAN · UP3 SORONG 2026")],[cS(scope)],[],[cB("No"),cB("Kelompok"),cB("Kegiatan Susut"),...MONL.map(cB),cB("Total")]];
+      const WM=KEG.map(()=>Array(12).fill(0));R0.forEach(d=>WM[d.k][d.m]+=d.v);let no=0;const tA=Array(12).fill(0);
+      GROUPS.forEach(g=>{if(f.g&&f.g!==g)return;const idx=KEG.map((k,i)=>i).filter(i=>GRP[i]===g&&keep(f,i));if(!idx.length)return;
+        const sub=Array(12).fill(0);idx.forEach(i=>WM[i].forEach((v,m)=>sub[m]+=v));
+        rk.push([cB(""),cB(g),cB("Subtotal "+g),...sub.map(cBN),cBN(sub.reduce((a,b)=>a+b,0))]);
+        idx.forEach(i=>{no++;WM[i].forEach((v,m)=>tA[m]+=v);rk.push([cN(no),cS(g),cS(KEG[i]),...WM[i].map(cN),cN(WM[i].reduce((a,b)=>a+b,0))]);});});
+      rk.push([cB(""),cB(""),cB("TOTAL"),...tA.map(cBN),cBN(tA.reduce((a,b)=>a+b,0))]);
+      body=sh("Rekap Bulanan",rk)+MONL.map((x,m)=>monthSheet(m)).join("")+detail("Rincian Semua Entri",R0);
+      fname="Input_Harian_Susut_WP_Jan-Des_2026";
+    }else{body=monthSheet(mSel)+detail("Rincian Entri "+MON[mSel],R0.filter(d=>d.m===mSel));fname="Input_Harian_Susut_WP_"+MONL[mSel]+"_2026";}
+    if(u)fname+="_"+u.replace(/\s+/g,"_");
+    const xml='<?xml version="1.0"?>\n<?mso-application progid="Excel.Sheet"?><Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"><Styles><Style ss:ID="b"><Font ss:Bold="1"/></Style></Styles>'+body+'</Workbook>';
+    const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff",xml],{type:"application/vnd.ms-excel;charset=utf-8"}));a.download=fname+".xls";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},500);
   }
 
   function mk(id,cfg){if(charts[id])charts[id].destroy();const el=$(id);if(!el||!window.Chart)return;charts[id]=new Chart(el,cfg);}
@@ -257,8 +356,8 @@ window.Susut = (function(){
     const cS=v=>'<Cell><Data ss:Type="String">'+esc(v)+'</Data></Cell>',cN=v=>'<Cell><Data ss:Type="Number">'+v+'</Data></Cell>';
     const s1=[["No","Kelompok","Kegiatan Susut",...MONL,"Total WP"].map(cS).join("")];let n=0;
     KEG.forEach((k,i)=>{if(!keep(f,i))return;n++;s1.push([cN(n),cS(GRP[i]),cS(k),...WM[i].map(cN),cN(WM[i].reduce((a,b)=>a+b,0))].join(""));});
-    const s2=[["Bulan","ULP","Penyulang","Kelompok WP","Lead Measure WP","Kegiatan Susut","Jumlah","Satuan"].map(cS).join("")];
-    D.filter(d=>d.k>=0&&keep(f,d.k)&&(f.b==null||d.m===f.b)).forEach(d=>s2.push([cS(MONL[d.m]),cS(d.ulp),cS(d.penyulang),cS(d.kel),cS(d.lm),cS(KEG[d.k]),cN(d.v),cS(d.sat)].join("")));
+    const s2=[["Tanggal","Bulan","ULP","Penyulang","Kelompok WP","Lead Measure WP","Kegiatan Susut","Jumlah","Satuan"].map(cS).join("")];
+    D.filter(d=>d.k>=0&&keep(f,d.k)&&(f.b==null||d.m===f.b)).sort((a,b)=>a.m-b.m||a.d-b.d).forEach(d=>s2.push([cN(d.d),cS(MONL[d.m]),cS(d.ulp),cS(d.penyulang),cS(d.kel),cS(d.lm),cS(KEG[d.k]),cN(d.v),cS(d.sat)].join("")));
     const sh=(nm,rr)=>'<Worksheet ss:Name="'+nm+'"><Table>'+rr.map(r=>"<Row>"+r+"</Row>").join("")+'</Table></Worksheet>';
     const xml='<?xml version="1.0"?>\n<?mso-application progid="Excel.Sheet"?><Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">'+sh("Rekap Susut dari WP",s1)+sh("Detail Entri WP",s2)+'</Workbook>';
     const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff",xml],{type:"application/vnd.ms-excel;charset=utf-8"}));a.download="Rekap_Susut_dari_Workplan_UP3_Sorong_2026.xls";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},500);
@@ -279,6 +378,12 @@ window.Susut = (function(){
     $("ss-map-body").addEventListener("change",e=>{const s=e.target.closest(".ss-map-sel");if(!s)return;const v=+s.value,key=s.dataset.key;if(v===+s.dataset.auto)delete OV[key];else OV[key]=v;remap();});
     $("ss-map-body").addEventListener("click",e=>{const b=e.target.closest(".ss-map-undo");if(!b)return;delete OV[b.dataset.key];remap();});
     $("ss-map-reset").addEventListener("click",()=>{if(confirm("Hapus semua pemetaan manual dan kembali ke pemetaan otomatis?")){OV={};remap();}});
+    $("ss-wd-bulan").addEventListener("change",e=>{WD.m=+e.target.value;WD.day=null;render();});
+    $("ss-wd-body").addEventListener("click",e=>{const c=e.target.closest("[data-wd]");if(!c)return;const d=+c.dataset.wd;WD.day=WD.day===d?null:d;render();});
+    $("ss-wd-xls").addEventListener("click",()=>wdXls(false));
+    $("ss-wd-xls-all").addEventListener("click",()=>wdXls(true));
+    $("ss-wd-clear").addEventListener("click",()=>{WD.day=null;render();});
+    $("ss-f-bulan").addEventListener("change",()=>{WD.day=null;});
     $("ss-map-q").addEventListener("input",render);
     $("ss-map-show").addEventListener("change",render);
     load();
