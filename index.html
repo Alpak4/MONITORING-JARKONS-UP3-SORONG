@@ -603,6 +603,34 @@
 .ao2-gap .up{color:#157A43}.ao2-gap .dn{color:#B3261E}
 #view-ao .filters input[type=search]{min-width:220px}
 </style>
+<style id="sidebar-css">
+:root{--side-w:236px}
+body{padding-left:var(--side-w);transition:padding-left .25s ease}
+nav.tabbar{position:fixed;left:0;top:0;bottom:0;width:var(--side-w);z-index:60;flex-direction:column;gap:3px;padding:0 12px 16px;background:linear-gradient(180deg,#062F57 0%,#0C2E52 100%);border-bottom:none;border-right:2px solid var(--yellow);overflow-y:auto;transition:transform .25s ease;box-shadow:2px 0 18px rgba(7,30,55,.18)}
+.side-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:16px 4px 12px;margin-bottom:6px;border-bottom:1px solid rgba(255,255,255,.12)}
+.side-head span{font-size:10.5px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:#9FB6CF}
+.side-btn{appearance:none;font-family:inherit;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;border-radius:8px;font-weight:700;font-size:12px;line-height:1}
+.side-close{width:30px;height:30px;color:#fff;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18)}
+.side-close:hover{background:rgba(255,255,255,.2)}
+nav.tabbar .tab{width:100%;justify-content:flex-start;text-align:left;color:#C9D6E6;border-bottom:none;border-left:3px solid transparent;border-radius:8px;margin:0;padding:11px 12px}
+nav.tabbar .tab:hover{color:#fff;background:rgba(255,255,255,.07)}
+nav.tabbar .tab.on{color:#fff;background:rgba(255,255,255,.12);border-left-color:var(--yellow)}
+nav.tabbar .tab .tcount{margin-left:auto;background:rgba(255,255,255,.14);color:#fff}
+nav.tabbar .tab.on .tcount{background:var(--yellow);color:var(--navy)}
+.side-toggle{width:36px;height:36px;color:#fff;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.24);font-size:17px}
+.side-toggle:hover{background:rgba(255,255,255,.22)}
+.side-edge{position:fixed;left:0;top:50%;transform:translateY(-50%);z-index:55;writing-mode:vertical-rl;padding:14px 7px;border-radius:0 10px 10px 0;background:var(--navy);color:#fff;border:1px solid var(--yellow);border-left:none;font-size:11.5px;letter-spacing:.6px;display:none;box-shadow:2px 0 12px rgba(7,30,55,.25)}
+.side-edge:hover{background:var(--blue-deep)}
+body.side-off{padding-left:0}
+body.side-off nav.tabbar{transform:translateX(-102%)}
+body.side-off .side-edge{display:inline-flex}
+.side-scrim{display:none}
+@media(max-width:900px){body{padding-left:0}body:not(.side-off) .side-scrim{display:block;position:fixed;inset:0;z-index:58;background:rgba(7,30,55,.4)}}
+.ppt-btn{gap:7px;padding:8px 14px;color:#fff;background:linear-gradient(135deg,#E9A700,#C98A00);border:1px solid #C98A00;font-size:12px;white-space:nowrap}
+.ppt-btn:hover{filter:brightness(1.06)}
+.ppt-btn:disabled{opacity:.6;cursor:progress}
+.titleband-act{display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap;justify-content:flex-end}
+</style>
 </head>
 <body>
 
@@ -653,6 +681,7 @@
 </script>
 
 <header class="topbar">
+  <button class="side-btn side-toggle" id="side-toggle" title="Tampilkan / sembunyikan menu">☰</button>
   <div class="brand">
     <div class="brand-txt">
       <div class="org">PLN UP3 Sorong</div>
@@ -677,10 +706,16 @@
     <h1 id="page-title">Monitoring Detail Gangguan FGTM</h1>
     <div class="scope">Cakupan: <b id="scope">Seluruh Wilayah · Tahun 2026</b></div>
   </div>
-  <div class="legend-note" id="page-legend">Gangguan Penyulang / Recloser / PMCB pada jaringan tegangan menengah (SUTM) wilayah kerja UP3 Sorong.</div>
+  <div class="titleband-act">
+    <div class="legend-note" id="page-legend">Gangguan Penyulang / Recloser / PMCB pada jaringan tegangan menengah (SUTM) wilayah kerja UP3 Sorong.</div>
+    <button class="side-btn ppt-btn" id="ppt-btn" title="Unduh menu aktif sebagai bahan presentasi PowerPoint (sesuai filter)">⤓ Unduh PPT</button>
+  </div>
 </div>
 
+<div class="side-scrim" id="side-scrim"></div>
+<button class="side-btn side-edge" id="side-edge" title="Tampilkan menu">☰ MENU</button>
 <nav class="tabbar">
+  <div class="side-head"><span>Menu Dashboard</span><button class="side-btn side-close" id="side-close" title="Sembunyikan menu ke kiri">«</button></div>
   <button class="tab on" data-tab="gangguan">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 L3 14 h7 l-1 8 10-12 h-7 z"/></svg>
     Gangguan
@@ -1279,6 +1314,20 @@
 <script src="mom-weekly.js"></script>
 <script src="workplan.js?v=20261002a"></script>
 <script src="susut.js?v=20261023k"></script>
+<script src="ppt-export.js?v=20261029b"></script>
+<script>
+(function(){
+  var KEY="fgtm_side_off", b=document.body, narrow=matchMedia("(max-width:900px)");
+  var saved=localStorage.getItem(KEY);
+  if(saved==="1" || (saved===null && narrow.matches)) b.classList.add("side-off");
+  function set(off){ b.classList.toggle("side-off", off); localStorage.setItem(KEY, off?"1":"0"); setTimeout(function(){ window.dispatchEvent(new Event("resize")); }, 280); }
+  document.getElementById("side-toggle").addEventListener("click", function(){ set(!b.classList.contains("side-off")); });
+  document.getElementById("side-close").addEventListener("click", function(){ set(true); });
+  document.getElementById("side-edge").addEventListener("click", function(){ set(false); });
+  document.getElementById("side-scrim").addEventListener("click", function(){ set(true); });
+  document.querySelectorAll(".tab").forEach(function(t){ t.addEventListener("click", function(){ if(narrow.matches) set(true); }); });
+})();
+</script>
 <script>
   (function(){
     var titles = {
