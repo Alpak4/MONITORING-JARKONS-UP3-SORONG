@@ -9,6 +9,9 @@
   var BL3 = ["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"];
   var ULPS = ["SORONG KOTA","AIMAS","TEMINABUAN","WAISAI"];
   var UCLR = {"SORONG KOTA":"#0B3C6E","AIMAS":"#0067AC","TEMINABUAN":"#E9A700","WAISAI":"#1E9E8F"};
+  // Target bulanan per ULP (revisi 3 Nov 2026) — ubah di sini bila target berubah
+  var TARGET_RABAS  = {"SORONG KOTA":31.67, "AIMAS":45, "TEMINABUAN":57.25, "WAISAI":16.67};   // kms / bulan (perabasan / pangkas)
+  var TARGET_TEBANG = {"SORONG KOTA":60,    "AIMAS":80, "TEMINABUAN":225,   "WAISAI":40};      // btg / bulan (penebangan)
   var NAVY="#0B3C6E", BLUE="#0067AC", YEL="#FDB913", RED="#E2231A", GRN="#1E9E58", MUTED="#5B6573", INK="#10243B";
   var FONT = "Calibri, Carlito, 'Segoe UI', Arial, sans-serif";
   var DPR = 2.5, PX = 10000;          // 1 px logis = 10.000 EMU
@@ -58,24 +61,10 @@
       Object.keys(r.t||{}).forEach(function(m){ if(+m<=cur) vmap[v].btg+=r.t[m]||0; });
     });
     var vendors=Object.keys(vmap).map(function(k){ return vmap[k]; }).filter(function(v){ return v.kms>0||v.btg>0; }).sort(function(a,b){ return b.kms-a.kms; });
-    // target (bulanan)
-    var tK={}, tT={}, hasK=false, hasT=false, src="";
-    try{
-      if(window.Workplan && window.Workplan.ensure){ await withTimeout(window.Workplan.ensure(), 12000); var P=window.Workplan.data();
-        (P.TARGET||[]).forEach(function(t){
-          var isK=/rabas/i.test(t.lm) && /km/i.test(t.satuan||"kms"), isT=/tebang/i.test(t.lm);
-          if(!isK && !isT) return;
-          ULPS.forEach(function(u){ var v=(t.tg&&t.tg[u])||0; if(!v) return; if(isK){ tK[u]=(tK[u]||0)+v/12; hasK=true; } else { tT[u]=(tT[u]||0)+v/12; hasT=true; } });
-        });
-        if(hasK||hasT) src="Target Workplan 2026 (lead measure Rabas & Tebang Pohon, target tahunan ÷ 12)";
-      }
-    }catch(e){}
-    var upK=hasK?sum(ULPS.map(function(u){return tK[u]||0;})):null, upT=hasT?sum(ULPS.map(function(u){return tT[u]||0;})):null;
-    if(upK==null||upT==null){
-      try{ if(window.WIG){ await withTimeout(window.WIG.init(), 12000); var W=window.WIG.data();
-        if(upK==null && W.tgt[7]){ upK=W.tgt[7]; src=src||"Target WIG Keandalan UP3 (Pelaksanaan ROW & Penebangan Pohon)"; }
-        if(upT==null && W.tgt[8]){ upT=W.tgt[8]; src=src||"Target WIG Keandalan UP3 (Pelaksanaan ROW & Penebangan Pohon)"; } } }catch(e){}
-    }
+    // target bulanan ROW per ULP (ditetapkan UP3 Sorong, revisi 3 Nov 2026)
+    var tK=TARGET_RABAS, tT=TARGET_TEBANG, hasK=true, hasT=true;
+    var src="Target bulanan ROW per ULP UP3 Sorong (revisi 3 Nov 2026): rabas/pangkas "+nf(sum(ULPS.map(function(u){return tK[u];})),2)+" kms & tebang "+nf(sum(ULPS.map(function(u){return tT[u];})),0)+" btg per bulan";
+    var upK=sum(ULPS.map(function(u){return tK[u]||0;})), upT=sum(ULPS.map(function(u){return tT[u]||0;}));
     function tot(A,u,a,b){ var s=0; for(var m=a;m<=b;m++) s+=A[u][m]; return s; }
     var U={};
     ULPS.forEach(function(u){

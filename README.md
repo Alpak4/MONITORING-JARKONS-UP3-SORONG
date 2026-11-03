@@ -13,6 +13,8 @@ Tanggal: 3 November 2026 · Versi cache: ?v=20261103a / ?v=20261103b
    - Kinerja per ULP (panel 2×2) · Top penyulang & kontribusi ULP · Mitra pelaksana
    - Catatan capaian & rekomendasi tindak lanjut otomatis
    - Periode mengikuti filter bulan menu ROW (default: bulan terakhir berdata)
+   - Target bulanan per ULP (revisi 3 Nov 2026): Rabas/pangkas — Sorong Kota 31,67 · Aimas 45 · Teminabuan 57,25 · Waisai 16,67 kms;
+     Penebangan — Sorong Kota 60 · Aimas 80 · Teminabuan 225 · Waisai 40 btg. (Ubah di bagian TARGET_RABAS / TARGET_TEBANG pada row-ppt.js)
 3. **Unduh PPT — menu Monitoring AO** (format "AO_M1_November"): Cover, Executive Summary, Ikhtisar Anggaran,
    Rincian per Kegiatan, Status Pekerjaan (grafik), Daftar Pekerjaan (14 paket/slide). Daftar kini diurutkan seperti template:
    per tahap (Pelaksanaan → Proses Tagihan → Pengadaan → Terbayar), paket lewat akhir kontrak didahulukan, lalu nilai terbesar.
