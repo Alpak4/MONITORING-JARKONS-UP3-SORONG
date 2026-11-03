@@ -249,12 +249,17 @@ window.Workplan = (function(){
     el("wp-f-vendor").innerHTML=["SEMUA"].concat(ven).map(v=>opt(v,state.vendor)).join("");
   }
 
+  let dataP=null, wired=false;
+  function ensure(){
+    if(!dataP) dataP=Promise.all([grab(URL_TARGET),grab(URL_REAL)]).then(([tg,rl])=>{ TARGET=parseTarget(tg); REAL=parseReal(rl); loaded=true; });
+    return dataP;
+  }
+  function data(){ return { TARGET:TARGET, REAL:REAL, ULPS:ULPS, MONTHS:MONTHS, KEL_ORDER:KEL_ORDER }; }
   async function init(){
-    if(loaded){ renderAll(); return; }
+    if(wired){ if(loaded) renderAll(); return; }
+    wired=true;
     const src=el("wp-source"); if(src) src.innerHTML=`<span class="wp-pill loading">Memuat data workplan dari Google Sheet…</span>`;
-    const [tg,rl]=await Promise.all([grab(URL_TARGET),grab(URL_REAL)]);
-    TARGET=parseTarget(tg); REAL=parseReal(rl);
-    loaded=true;
+    await ensure();
     if(src) src.innerHTML= REAL.length
       ? `<span class="wp-pill live">● Data live</span><span class="wp-pill">4 ULP (tanpa Fakfak &amp; Kaimana)</span><span class="wp-pill">${fmt(REAL.length)} entri realisasi · ${TARGET.length} lead measure bertarget</span>`
       : `<span class="wp-pill warn">Data realisasi tidak dapat dimuat — periksa koneksi / akses spreadsheet</span>`;
@@ -269,5 +274,5 @@ window.Workplan = (function(){
     const xb=el("wp-xls"); if(xb) xb.onclick=exportXls;
     renderAll();
   }
-  return {init:init};
+  return {init:init, ensure:ensure, data:data};
 })();

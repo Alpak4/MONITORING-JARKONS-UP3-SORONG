@@ -260,5 +260,5 @@
     renderAll();
   }
 
-  window.FDX = { init };
+  window.FDX = { init, state };
 })();

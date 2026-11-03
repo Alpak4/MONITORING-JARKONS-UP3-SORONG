@@ -202,15 +202,20 @@
     }
   }
 
-  let done=false;
-  async function init(){
-    if(done) return; done=true;
-    ROWS.forEach(r=>{ TGT[r.no]=N; REAL[r.no]=Array(12).fill(null); });
-    const s=document.getElementById("wig-source");
-    if(s) s.innerHTML = `<span class="fdx-badge">● Memuat data…</span>`;
-    await Promise.allSettled([loadTarget(), loadReal()]);
-    paint();
-    const x=document.getElementById("wig-xls"); if(x) x.onclick=exportXls;
+  let initP=null;
+  function init(){
+    if(initP) return initP;
+    initP=(async()=>{
+      ROWS.forEach(r=>{ TGT[r.no]=N; REAL[r.no]=Array(12).fill(null); });
+      const s=document.getElementById("wig-source");
+      if(s) s.innerHTML = `<span class="fdx-badge">● Memuat data…</span>`;
+      await Promise.allSettled([loadTarget(), loadReal()]);
+      paint();
+      const x=document.getElementById("wig-xls"); if(x) x.onclick=exportXls;
+    })();
+    return initP;
   }
-  window.WIG = { init };
+  // Akses data untuk ekspor PPT 4DX
+  function data(){ return { rows: ROWS.map(r=>({no:r.no,nama:r.nama})), tgt: TGT, real: REAL, meta: META }; }
+  window.WIG = { init, data };
 })();

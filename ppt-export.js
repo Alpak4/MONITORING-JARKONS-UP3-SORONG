@@ -225,6 +225,28 @@
     overlay("Memuat template…");
     try{
       await load(JSZIP, function(){ return !!window.JSZip; });
+      if(view.id==="view-ao" && window.AOPPT && window.AO){
+        overlay("Menyusun PPT format AO…");
+        if(typeof window.AO.load==="function") await window.AO.load();
+        var r=await window.AOPPT.build(window.JSZip, window.AO, new Date());
+        var l=document.createElement("a"); l.href=URL.createObjectURL(r.blob); l.download=r.name;
+        document.body.appendChild(l); l.click(); setTimeout(function(){ URL.revokeObjectURL(l.href); l.remove(); }, 1500);
+        overlay(null); return;
+      }
+      if(view.id==="view-row" && window.ROWPPT){
+        overlay("Menyusun PPT Paparan Realisasi ROW…");
+        var r3=await window.ROWPPT.build(window.JSZip, new Date(), overlay);
+        var l3=document.createElement("a"); l3.href=URL.createObjectURL(r3.blob); l3.download=r3.name;
+        document.body.appendChild(l3); l3.click(); setTimeout(function(){ URL.revokeObjectURL(l3.href); l3.remove(); }, 1500);
+        overlay(null); return;
+      }
+      if(view.id==="view-fdx" && window.FDXPPT){
+        overlay("Menyusun PPT Monitoring 4DX (WIG & Workplan HAR)…");
+        var r2=await window.FDXPPT.build(window.JSZip, new Date(), overlay);
+        var l2=document.createElement("a"); l2.href=URL.createObjectURL(r2.blob); l2.download=r2.name;
+        document.body.appendChild(l2); l2.click(); setTimeout(function(){ URL.revokeObjectURL(l2.href); l2.remove(); }, 1500);
+        overlay(null); return;
+      }
       var resp=await fetch(TEMPLATE); if(!resp.ok) throw new Error("Template PPT tidak ditemukan ("+TEMPLATE+")");
       var zip=await window.JSZip.loadAsync(await resp.arrayBuffer());
       overlay("Menganalisa data & menyusun slide…");
