@@ -233,6 +233,13 @@
         document.body.appendChild(l); l.click(); setTimeout(function(){ URL.revokeObjectURL(l.href); l.remove(); }, 1500);
         overlay(null); return;
       }
+      if(view.id==="view-workplan" && window.WPPPT){
+        overlay("Menyusun PPT Paparan Realisasi Workplan…");
+        var r4=await window.WPPPT.build(window.JSZip, new Date(), overlay);
+        var l4=document.createElement("a"); l4.href=URL.createObjectURL(r4.blob); l4.download=r4.name;
+        document.body.appendChild(l4); l4.click(); setTimeout(function(){ URL.revokeObjectURL(l4.href); l4.remove(); }, 1500);
+        overlay(null); return;
+      }
       if(view.id==="view-row" && window.ROWPPT){
         overlay("Menyusun PPT Paparan Realisasi ROW…");
         var r3=await window.ROWPPT.build(window.JSZip, new Date(), overlay);

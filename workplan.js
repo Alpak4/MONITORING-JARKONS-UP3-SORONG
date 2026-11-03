@@ -254,7 +254,7 @@ window.Workplan = (function(){
     if(!dataP) dataP=Promise.all([grab(URL_TARGET),grab(URL_REAL)]).then(([tg,rl])=>{ TARGET=parseTarget(tg); REAL=parseReal(rl); loaded=true; });
     return dataP;
   }
-  function data(){ return { TARGET:TARGET, REAL:REAL, ULPS:ULPS, MONTHS:MONTHS, KEL_ORDER:KEL_ORDER }; }
+  function data(){ return { TARGET:TARGET, REAL:REAL, ULPS:ULPS, MONTHS:MONTHS, KEL_ORDER:KEL_ORDER, state:state }; }
   async function init(){
     if(wired){ if(loaded) renderAll(); return; }
     wired=true;
