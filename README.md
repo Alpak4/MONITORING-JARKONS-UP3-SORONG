@@ -13,7 +13,10 @@ Tanggal: 3 November 2026 · Versi cache: ?v=20261103a / ?v=20261103b
    - Kinerja per ULP (panel 2×2) · Top penyulang & kontribusi ULP · Mitra pelaksana
    - Catatan capaian & rekomendasi tindak lanjut otomatis
    - Periode mengikuti filter bulan menu ROW (default: bulan terakhir berdata)
-3. Monitoring AO tetap memakai format "AO_M1_November"; menu lain tetap format ringkas.
+3. **Unduh PPT — menu Monitoring AO** (format "AO_M1_November"): Cover, Executive Summary, Ikhtisar Anggaran,
+   Rincian per Kegiatan, Status Pekerjaan (grafik), Daftar Pekerjaan (14 paket/slide). Daftar kini diurutkan seperti template:
+   per tahap (Pelaksanaan → Proses Tagihan → Pengadaan → Terbayar), paket lewat akhir kontrak didahulukan, lalu nilai terbesar.
+4. Menu lain tetap memakai format ringkas.
 
 ## File dalam paket (paket DATAR — semua di ROOT repo, sejajar index.html)
 | File | Status | Keterangan |
@@ -23,19 +26,22 @@ Tanggal: 3 November 2026 · Versi cache: ?v=20261103a / ?v=20261103b
 | fdx.js | TIMPA | menyediakan bulan filter 4DX untuk PPT |
 | wig.js | TIMPA | menyediakan data WIG Keandalan untuk PPT |
 | workplan.js | TIMPA | menyediakan data Workplan (target & realisasi) untuk PPT |
+| ao-ppt.js | TIMPA | ekspor PPT Monitoring AO (urutan daftar pekerjaan) |
+| ao-template.pptx | PASTIKAN ADA | template PPT AO_M1_November (sama dengan versi 2 Nov) |
 | fdx-ppt.js | BARU | ekspor PPT Monitoring 4DX |
 | row-ppt.js | BARU | ekspor PPT Paparan ROW |
 | fdx-template.js | BARU | template PPT (cover & header) dikemas base64, dimuat hanya saat Unduh PPT |
 
-File lain di repo (ao-ppt.js, ao-template.pptx, ppt-template.pptx, rabas.js, aset_jaringan.js, dll.) TIDAK perlu diubah.
+File lain di repo (ppt-template.pptx, rabas.js, aset_jaringan.js, dll.) TIDAK perlu diubah.
 
 ## Cara upload
 1. Ekstrak ZIP ini.
-2. GitHub → buka repo → **Add file → Upload files** → seret 8 file di atas (tanpa folder) ke ROOT repo.
+2. GitHub → buka repo → **Add file → Upload files** → seret 10 file di atas (tanpa folder) ke ROOT repo.
 3. Isi pesan commit, mis. "Update PPT 4DX & ROW 3 Nov 2026" → **Commit changes** ke branch main.
 4. Tunggu ±1–2 menit hingga GitHub Pages selesai deploy, lalu buka situs dengan **Ctrl+F5**.
 
 ## Uji setelah deploy
+- Menu **Monitoring AO** → **⤓ Unduh PPT** → file "AO_M<minggu>_<Bulan>_2026.pptx".
 - Menu **Monitoring 4DX** → pilih Bulan → **⤓ Unduh PPT** → file "Monitoring 4DX - WIG & Workplan HAR UP3 Sorong s.d <Bulan> 2026.pptx".
 - Menu **ROW** → (opsional) pilih bulan → **⤓ Unduh PPT** → file "Paparan Realisasi ROW UP3 Sorong s.d <Bulan> 2026.pptx".
 
