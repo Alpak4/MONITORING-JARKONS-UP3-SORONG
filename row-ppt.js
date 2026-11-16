@@ -396,6 +396,15 @@
     var M=await model(now); baseFont();
     var per=BULAN[M.cur]+" 2026";
     var DK=await deck(JSZip, now, ["Paparan Realisasi Pekerjaan ROW","Rabas & Tebang Pohon UP3 Sorong"], "row", say);
+    await addSlides(M, DK, say);
+    var blob=await DK.finish();
+    return {blob:blob, name:"Paparan Realisasi ROW UP3 Sorong s.d "+BULAN[M.cur]+" 2026.pptx", slides:DK.count()};
+  }
+
+  // Menyusun 6 slide konten ROW ke sebuah "deck" (objek {S, putImg, put}) — dipakai paparan ROW & Evaluasi FGTM.
+  async function addSlides(M, DK, say){
+    say=say||function(){};
+    var per=BULAN[M.cur]+" 2026";
     var S=DK.S, putImg=DK.putImg, put=DK.put;
 
     // Slide 2 — Ringkasan
@@ -472,11 +481,9 @@
     put(s, shape(s.id, X0, Y0+420000, hw, H0-420000, {fill:"#F4F7FB",line:"#DCE4ED",ins:150000,paras:F.f.map(function(t){ return para(run(t,{sz:1200}),{bu:1,buc:"0067AC",aft:900}); }).join("")}),1);
     put(s, shape(s.id, X0+hw+200000, Y0+420000, hw, H0-420000, {fill:"#FFF9E8",line:"#F3DFA6",ins:150000,paras:F.r.map(function(t){ return para(run(t,{sz:1200}),{bu:1,buc:"E9A700",aft:900}); }).join("")}),1);
 
-    var blob=await DK.finish();
-    return {blob:blob, name:"Paparan Realisasi ROW UP3 Sorong s.d "+BULAN[M.cur]+" 2026.pptx", slides:DK.count()};
   }
 
-  window.ROWPPT = { build: build,
+  window.ROWPPT = { build: build, model: model, addSlides: addSlides,
     // helper bersama untuk paparan lain (mis. Realisasi Workplan)
     H: { deck:deck, chartCanvas:chartCanvas, baseFont:baseFont, newCanvas:newCanvas, rr:rr, txt:txt, heat:heat, hexA:hexA, nf:nf, pc:pc, title:title, sum:sum,
          shape:shape, para:para, run:run, caption:caption, kpiCard:kpiCard, iconPangkas:iconPangkas, iconTebang:iconTebang,

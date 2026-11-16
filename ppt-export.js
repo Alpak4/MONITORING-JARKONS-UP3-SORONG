@@ -233,6 +233,11 @@
         document.body.appendChild(l); l.click(); setTimeout(function(){ URL.revokeObjectURL(l.href); l.remove(); }, 1500);
         overlay(null); return;
       }
+      if(view.id==="view-fgtmppt" && window.FGTMPPT){
+        overlay("Menyusun PPT Evaluasi Gangguan JTM (FGTM)…");
+        await window.FGTMPPT.download(window.JSZip, overlay);
+        overlay(null); return;
+      }
       if(view.id==="view-workplan" && window.WPPPT){
         overlay("Menyusun PPT Paparan Realisasi Workplan…");
         var r4=await window.WPPPT.build(window.JSZip, new Date(), overlay);

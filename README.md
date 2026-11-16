@@ -1,7 +1,18 @@
 # Paket Update GitHub — Dashboard Gangguan PLN UP3 Sorong
-Tanggal: 3 November 2026 · Versi cache: ?v=20261103a / ?v=20261103b
+Tanggal: 16 November 2026 · Versi cache terbaru: ?v=20261116a
 
-## Pembaruan
+## Pembaruan 16 November 2026 — Sub menu **PPT Evaluasi FGTM**
+- Menu samping **Gangguan → PPT Evaluasi FGTM**: pilih Bulan, Minggu (M1 = tgl 1–7 · M2 = 8–14 · M3 = 15–21 · M4 = 22–akhir),
+  tanggal data, target FGTM s.d. periode, tanggal paparan, serta slide opsional; pratinjau angka utama & susunan slide.
+- **⤓ Download PPT Evaluasi FGTM** (format "Evaluasi FGTM M1 November – UP3 Sorong Rev 1", 23 slide + halaman detail otomatis):
+  - Dari data gangguan: cover, overview (realisasi vs target, ULP terbesar, tren mingguan, 5 keypoint teratas), realisasi
+    (durasi, zonasi, cuaca, indikasi GF/OC), sebaran per ULP & 10 keypoint, tren ULP & keypoint kritis 7 minggu,
+    detail gangguan minggu (21 baris/slide), dokumentasi temuan (bingkai foto diisi manual), evaluasi & tindak lanjut ULP.
+  - Dari data ROW: 6 slide ROW (ringkasan, matriks bulanan, kinerja ULP, penyulang, mitra, catatan).
+  - Tetap dari template (belum ada sumber data di dashboard): realisasi pekerjaan Teminabuan, kebutuhan material cover,
+    realisasi cover per material/ULP, dokumentasi checkpoint, penutup.
+
+## Pembaruan sebelumnya (3 November 2026)
 1. **Unduh PPT — menu Monitoring 4DX** (format "PPT_Workplan_HAR")
    - Cover (bulan laporan otomatis)
    - Monitoring WIG Keandalan (HAR): tabel Jan–Jun, Jul–Des, rekap 2026 / SMT 1 / SMT 2
@@ -36,14 +47,16 @@ Tanggal: 3 November 2026 · Versi cache: ?v=20261103a / ?v=20261103b
 | File | Status | Keterangan |
 |---|---|---|
 | index.html | TIMPA | memuat skrip baru + cache-busting |
-| ppt-export.js | TIMPA | pengarah tombol Unduh PPT (AO / 4DX / ROW / lainnya) |
+| ppt-export.js | TIMPA | pengarah tombol Unduh PPT (AO / 4DX / ROW / Workplan / FGTM / lainnya) |
 | fdx.js | TIMPA | menyediakan bulan filter 4DX untuk PPT |
 | wig.js | TIMPA | menyediakan data WIG Keandalan untuk PPT |
 | workplan.js | TIMPA | menyediakan data & filter Workplan untuk PPT |
 | ao-ppt.js | TIMPA | ekspor PPT Monitoring AO (urutan daftar pekerjaan) |
 | ao-template.pptx | PASTIKAN ADA | template PPT AO_M1_November (sama dengan versi 2 Nov) |
 | fdx-ppt.js | BARU | ekspor PPT Monitoring 4DX |
-| row-ppt.js | BARU | ekspor PPT Paparan ROW + kerangka paparan bersama |
+| row-ppt.js | TIMPA | ekspor PPT Paparan ROW + kerangka paparan bersama (dipakai juga slide ROW di PPT FGTM) |
+| fgtm-ppt.js | BARU | sub menu & ekspor PPT Evaluasi FGTM mingguan |
+| fgtm-template.js | BARU | template PPT Evaluasi FGTM (base64), dimuat hanya saat unduh |
 | wp-ppt.js | BARU | ekspor PPT Paparan Realisasi Workplan (perlu row-ppt.js) |
 | fdx-template.js | BARU | template PPT (cover & header) dikemas base64, dimuat hanya saat Unduh PPT |
 
@@ -51,11 +64,12 @@ File lain di repo (ppt-template.pptx, rabas.js, aset_jaringan.js, dll.) TIDAK pe
 
 ## Cara upload
 1. Ekstrak ZIP ini.
-2. GitHub → buka repo → **Add file → Upload files** → seret 11 file di atas (tanpa folder) ke ROOT repo.
-3. Isi pesan commit, mis. "Update PPT 4DX & ROW 3 Nov 2026" → **Commit changes** ke branch main.
+2. GitHub → buka repo → **Add file → Upload files** → seret 13 file di atas (tanpa folder) ke ROOT repo.
+3. Isi pesan commit, mis. "Sub menu PPT Evaluasi FGTM 16 Nov 2026" → **Commit changes** ke branch main.
 4. Tunggu ±1–2 menit hingga GitHub Pages selesai deploy, lalu buka situs dengan **Ctrl+F5**.
 
 ## Uji setelah deploy
+- Menu **Gangguan → PPT Evaluasi FGTM** → pilih Bulan & Minggu → **⤓ Download PPT Evaluasi FGTM** → file "Evaluasi FGTM M<minggu> <Bulan> 2026 - UP3 Sorong.pptx".
 - Menu **Realisasi Workplan** → (opsional) pilih Bulan → **⤓ Unduh PPT** → file "Paparan Realisasi Workplan UP3 Sorong s.d <Bulan> 2026.pptx".
 - Menu **Monitoring AO** → **⤓ Unduh PPT** → file "AO_M<minggu>_<Bulan>_2026.pptx".
 - Menu **Monitoring 4DX** → pilih Bulan → **⤓ Unduh PPT** → file "Monitoring 4DX - WIG & Workplan HAR UP3 Sorong s.d <Bulan> 2026.pptx".

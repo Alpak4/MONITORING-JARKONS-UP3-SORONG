@@ -629,6 +629,18 @@ body.side-off .side-edge{display:inline-flex}
 .ppt-btn{gap:7px;padding:8px 14px;color:#fff;background:linear-gradient(135deg,#E9A700,#C98A00);border:1px solid #C98A00;font-size:12px;white-space:nowrap}
 .ppt-btn:hover{filter:brightness(1.06)}
 .ppt-btn:disabled{opacity:.6;cursor:progress}
+nav.tabbar .tab.tab-sub{margin:-2px 0 2px 18px;padding-top:7px;padding-bottom:7px;font-size:12px;border-left:2px solid rgba(253,185,19,.55);border-radius:0 8px 8px 0}
+nav.tabbar .tab.tab-sub svg{width:14px;height:14px}
+.fp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px 14px;align-items:end}
+.fp-grid label{display:block;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.3px;margin-bottom:5px}
+.fp-grid select,.fp-grid input[type=date],.fp-grid input[type=number]{width:100%;box-sizing:border-box;font:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--navy)}
+.fp-checks{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:14px;font-size:12.5px;color:var(--navy)}
+.fp-checks label{display:flex;align-items:center;gap:7px;cursor:pointer}
+.fp-dl{margin-top:16px;font-size:13.5px;padding:11px 20px}
+.fp-tbl{width:100%;border-collapse:collapse;font-size:12.5px}
+.fp-tbl th{background:#0B3C6E;color:#fff;text-align:left;padding:8px 10px;font-weight:700}
+.fp-tbl td{padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.fp-tbl tr:nth-child(even) td{background:#F7F9FC}
 .titleband-act{display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap;justify-content:flex-end}
 </style>
 </head>
@@ -719,6 +731,10 @@ body.side-off .side-edge{display:inline-flex}
   <button class="tab on" data-tab="gangguan">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 L3 14 h7 l-1 8 10-12 h-7 z"/></svg>
     Gangguan
+  </button>
+  <button class="tab tab-sub" data-tab="fgtmppt" title="Unduh PPT Evaluasi Gangguan JTM (FGTM) mingguan">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>
+    PPT Evaluasi FGTM
   </button>
   <button class="tab" data-tab="pemeliharaan">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.3L3 18.3 5.7 21l6.7-6.3a4 4 0 0 0 5.3-5.4l-2.6 2.6-2.1-2.1z"/></svg>
@@ -938,6 +954,36 @@ body.side-off .side-edge{display:inline-flex}
   <div class="mit-grid" id="mitigasi"></div>
 </main>
 </div><!-- /view-gangguan -->
+
+<div id="view-fgtmppt" class="view">
+  <main>
+    <div class="section-h"><span class="bar"></span><h2>Unduh PPT Evaluasi Gangguan JTM (FGTM)</h2><span class="hint">Format "Evaluasi FGTM M1 November – UP3 Sorong Rev 1" · diisi otomatis dari data dashboard</span></div>
+    <div id="fp-src" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:6px 0 12px"></div>
+    <div class="panel">
+      <h3>Periode &amp; Isi Paparan</h3>
+      <div class="ph-sub">Minggu: M1 = tgl 1–7 · M2 = 8–14 · M3 = 15–21 · M4 = 22–akhir bulan. Data kumulatif dihitung 1 Januari s.d. tanggal data. <b id="fp-range"></b></div>
+      <div class="fp-grid" style="margin-top:12px">
+        <div><label for="fp-bulan">Bulan evaluasi</label><select id="fp-bulan"></select></div>
+        <div><label for="fp-minggu">Minggu</label><select id="fp-minggu"><option value="1">M1 (1–7)</option><option value="2">M2 (8–14)</option><option value="3">M3 (15–21)</option><option value="4">M4 (22–akhir)</option></select></div>
+        <div><label for="fp-cut">Data s.d. tanggal</label><input type="date" id="fp-cut" min="2026-01-01" max="2026-12-31"></div>
+        <div><label for="fp-target">Target FGTM s.d. periode (kali)</label><input type="number" id="fp-target" min="0" step="1"></div>
+        <div><label for="fp-paparan">Tanggal paparan (cover)</label><input type="date" id="fp-paparan"></div>
+      </div>
+      <div class="fp-checks">
+        <label><input type="checkbox" id="fp-dok"> Dokumentasi temuan (slide 8–9)</label>
+        <label><input type="checkbox" id="fp-row"> Realisasi ROW (slide 12–17)</label>
+        <label><input type="checkbox" id="fp-statis"> Lampiran template: realisasi pekerjaan Teminabuan, material cover, checkpoint</label>
+      </div>
+      <button class="side-btn ppt-btn fp-dl" id="fp-dl">⤓ Download PPT Evaluasi FGTM</button>
+    </div>
+    <div class="section-h"><span class="bar"></span><h2>Pratinjau Angka Utama</h2><span class="hint">Sesuai pilihan periode di atas</span></div>
+    <div class="kpi-grid" id="fp-preview"></div>
+    <div class="section-h"><span class="bar"></span><h2>Susunan Slide</h2><span class="hint">Sumber isi tiap slide</span></div>
+    <div class="panel" style="padding:0;overflow:auto">
+      <table class="fp-tbl"><thead><tr><th style="width:90px">Slide</th><th style="width:220px">Judul</th><th>Isi</th><th style="width:140px">Sumber</th></tr></thead><tbody id="fp-slides"></tbody></table>
+    </div>
+  </main>
+</div>
 
 <div id="view-pemeliharaan" class="view">
   <div class="filters">
@@ -1316,9 +1362,10 @@ body.side-off .side-edge{display:inline-flex}
 <script src="susut.js?v=20261023k"></script>
 <script src="ao-ppt.js?v=20261103c"></script>
 <script src="fdx-ppt.js?v=20261103a"></script>
-<script src="row-ppt.js?v=20261103f"></script>
+<script src="row-ppt.js?v=20261116a"></script>
 <script src="wp-ppt.js?v=20261103g"></script>
-<script src="ppt-export.js?v=20261103f"></script>
+<script src="fgtm-ppt.js?v=20261116a"></script>
+<script src="ppt-export.js?v=20261116a"></script>
 <script>
 (function(){
   var KEY="fgtm_side_off", b=document.body, narrow=matchMedia("(max-width:900px)");
@@ -1341,6 +1388,7 @@ body.side-off .side-edge{display:inline-flex}
       ao: {t:"Monitoring AO (Anggaran Operasi) 2026", l:"Pagu SKAO, pengadaan, kontrak, tagihan & pembayaran per kegiatan dan paket pekerjaan \u2014 data langsung dari spreadsheet."},
       fdx: {t:"Monitoring 4DX UP3 Sorong", l:"Target Lead Measure 2026 per ULP \u2014 skala tahunan, bulanan, mingguan, dan harian."},
       susut: {t:"Monitoring Workplan Susut", l:"Target WP UIW 2026 & realisasi kegiatan penurunan susut teknis UP3 Sorong \u2014 sheet WP UIW Target 2026 & SOR."},
+      fgtmppt: {t:"Download PPT Evaluasi Gangguan JTM (FGTM)", l:"Paparan mingguan evaluasi gangguan JTM UP3 Sorong \u2014 diisi otomatis dari data gangguan & ROW pada dashboard."},
       workplan: {t:"Monitoring Realisasi Workplan", l:"Realisasi pekerjaan workplan 2026 terhadap target lead measure tiap ULP \u2014 per bulan, kelompok pekerjaan, dan mitra pelaksana."}
     };
     var tabs = document.querySelectorAll(".tab");
@@ -1358,6 +1406,7 @@ body.side-off .side-edge{display:inline-flex}
       if(name==="ao" && window.AOApp){ window.AOApp.init(); }
       if(name==="fdx" && window.FDX){ window.FDX.init(); if(window.WIG) window.WIG.init(); }
       if(name==="workplan" && window.Workplan){ window.Workplan.init(); }
+      if(name==="fgtmppt" && window.FGTMPPT){ window.FGTMPPT.initView(); }
       if(name==="susut" && window.Susut){ window.Susut.init(); }
       window.scrollTo(0,0);
     }
