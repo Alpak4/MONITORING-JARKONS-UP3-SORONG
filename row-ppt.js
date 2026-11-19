@@ -40,7 +40,9 @@
     if(!R.records) await R.load();
     var recs=R.records||[], act=R.activeMonths().filter(function(m){ return m<=11; });
     var cur = (R.month==="all"||R.month==null) ? (act.length?Math.max.apply(null,act):now.getMonth()) : +R.month;
-    var nM=cur+1, months=[]; for(var i=0;i<nM;i++) months.push(i);
+    // filter rentang tanggal: target kumulatif dihitung untuk bulan-bulan dalam rentang saja
+    var mFrom=(R.from && /^2026-\d{2}/.test(R.from)) ? Math.min(cur, +R.from.slice(5,7)-1) : 0;
+    var nM=cur-mFrom+1, months=[]; for(var i=0;i<=cur;i++) months.push(i);
     var K={}, T={}; ULPS.forEach(function(u){ K[u]=Array(12).fill(0); T[u]=Array(12).fill(0); });
     var pnyMap={};
     recs.forEach(function(r){
@@ -79,7 +81,7 @@
         nPny: pny.filter(function(p){return p.ulp===u && p.kms>0;}).length};
     });
     var mK=months.map(function(m){ return sum(ULPS.map(function(u){return K[u][m];})); }), mT=months.map(function(m){ return sum(ULPS.map(function(u){return T[u][m];})); });
-    return {cur:cur, nM:nM, months:months, K:K, T:T, U:U, mK:mK, mT:mT, totK:sum(mK), totT:sum(mT), upK:upK, upT:upT, yK:yK, yT:yT, tgSrc:src,
+    return {cur:cur, nM:nM, mFrom:mFrom, months:months, K:K, T:T, U:U, mK:mK, mT:mT, totK:sum(mK), totT:sum(mT), upK:upK, upT:upT, yK:yK, yT:yT, tgSrc:src,
       pny:pny, vendors:vendors, source:R.source, nPny:pny.filter(function(p){return p.kms>0;}).length};
   }
 
@@ -129,14 +131,14 @@
   function matrix(M, kind, w, rowH){
     var isK=kind==="k", A=isK?M.K:M.T, unit=isK?"kms":"btg";
     var cols=[120]; M.months.forEach(function(){ cols.push(0); }); cols.push(74,74,62);
-    var fixed=120+74+74+62, mw=Math.max(40,(w-fixed)/M.nM); for(var i=1;i<=M.nM;i++) cols[i]=mw;
+    var NC=M.months.length, fixed=120+74+74+62, mw=Math.max(40,(w-fixed)/NC); for(var i=1;i<=NC;i++) cols[i]=mw;
     var rows=ULPS.concat(["UP3 SORONG"]), hh=32, rh=rowH||30, H=hh+rows.length*rh;
     var c=newCanvas(w,H), g=c.g, xs=[0]; cols.forEach(function(cw,i){ xs.push(xs[i]+cw); });
     var max=0; ULPS.forEach(function(u){ M.months.forEach(function(m){ max=Math.max(max,A[u][m]); }); });
     function cell(x,y,cw,ch,bg){ g.fillStyle=bg; g.fillRect(x,y,cw,ch); g.strokeStyle="#FFFFFF"; g.lineWidth=1.5; g.strokeRect(x,y,cw,ch); }
     // header
     var heads=["ULP"].concat(M.months.map(function(m){return BL3[m];})).concat(["Total","Target s/d","Capaian"]);
-    heads.forEach(function(h,i){ cell(xs[i],0,cols[i],hh,i===M.nM+1?"#123A63":(i>M.nM+1?"#123A63":NAVY)); txt(g,h,xs[i]+cols[i]/2,hh/2+1,{sz:11.5,b:1,c:"#FFFFFF",al:"center",bl:"middle"}); });
+    heads.forEach(function(h,i){ cell(xs[i],0,cols[i],hh,i===NC+1?"#123A63":(i>NC+1?"#123A63":NAVY)); txt(g,h,xs[i]+cols[i]/2,hh/2+1,{sz:11.5,b:1,c:"#FFFFFF",al:"center",bl:"middle"}); });
     rows.forEach(function(u,ri){
       var y=hh+ri*rh, up=u==="UP3 SORONG";
       var tgM = up ? (isK?M.upK:M.upT) : (isK?M.U[u].tgK:M.U[u].tgT);
@@ -146,12 +148,12 @@
       var tot=0;
       M.months.forEach(function(m,j){
         var v= up ? sum(ULPS.map(function(x){return A[x][m];})) : A[u][m]; tot+=v;
-        var bg = tgM ? heat(v/tgM*100) : (up?"#E6EDF5":blueScale(v,max));
+        var bg = m<(M.mFrom||0) ? "#EEF1F5" : (tgM ? heat(v/tgM*100) : (up?"#E6EDF5":blueScale(v,max)));
         cell(xs[j+1],y,cols[j+1],rh,bg);
         var dark=!tgM && !up && v/(max||1)>0.55;
         txt(g,v?nf(v,isK?1:0):"–",xs[j+1]+cols[j+1]/2,y+rh/2+1,{sz:11,b:up?1:0,c:dark?"#FFFFFF":INK,al:"center",bl:"middle"});
       });
-      var tg = tgM ? tgM*M.nM : null, p = tg ? tot/tg*100 : null, k=M.nM+1;
+      var tg = tgM ? tgM*M.nM : null, p = tg ? tot/tg*100 : null, k=NC+1;
       cell(xs[k],y,cols[k],rh,up?"#D5E2F0":"#EAF1F9"); txt(g,nf(tot,isK?1:0),xs[k]+cols[k]/2,y+rh/2+1,{sz:11.5,b:1,al:"center",bl:"middle"});
       cell(xs[k+1],y,cols[k+1],rh,"#F2F2F2"); txt(g,tg?nf(tg,isK?1:0):"-",xs[k+1]+cols[k+1]/2,y+rh/2+1,{sz:11,c:MUTED,al:"center",bl:"middle"});
       cell(xs[k+2],y,cols[k+2],rh,heat(p)); txt(g,pc(p),xs[k+2]+cols[k+2]/2,y+rh/2+1,{sz:11.5,b:1,al:"center",bl:"middle"});
@@ -355,7 +357,7 @@
     var tIdx=s1.indexOf("Monitoring WIG"); if(tIdx>0){ var tsp=s1.lastIndexOf("<p:txBody>",tIdx), tep=s1.indexOf("</p:txBody>",tIdx);
       var body=s1.slice(tsp,tep), pr=(body.match(/<a:rPr\b[^>]*\/>|<a:rPr\b[^>]*>[\s\S]*?<\/a:rPr>/)||['<a:rPr lang="id-ID"/>'])[0], ppr=(body.match(/<a:pPr\b[^>]*\/>|<a:pPr\b[^>]*>[\s\S]*?<\/a:pPr>/)||[""])[0];
       var bp=body.slice(0, body.indexOf("<a:p>"));
-      s1=s1.slice(0,tsp)+bp+coverLines.map(function(t){ return "<a:p>"+ppr+"<a:r>"+pr+"<a:t>"+esc(t)+"</a:t></a:r></a:p>"; }).join("")+s1.slice(tep); }
+      s1=s1.slice(0,tsp)+bp+coverLines.map(function(t,i){ var rp=i<2?pr:(/ sz="\d+"/.test(pr)?pr.replace(/ sz="\d+"/,' sz="1600"'):pr.replace("<a:rPr",'<a:rPr sz="1600"')); return "<a:p>"+ppr+"<a:r>"+rp+"<a:t>"+esc(t)+"</a:t></a:r></a:p>"; }).join("")+s1.slice(tep); }
     zip.file("ppt/slides/slide1.xml", s1);
     var proto=(await zip.file("ppt/slides/slide2.xml").async("string")).replace("MONITORING WIG KEANDALAN (HAR)","{{TITLE}}");
     var protoRel=(await zip.file("ppt/slides/_rels/slide2.xml.rels").async("string")).replace(/<Relationship Id="rId2"[^>]*notesSlide[^>]*\/>/,"");
@@ -395,7 +397,8 @@
     say("Memuat data ROW & target…");
     var M=await model(now); baseFont();
     var per=BULAN[M.cur]+" 2026";
-    var DK=await deck(JSZip, now, ["Paparan Realisasi Pekerjaan ROW","Rabas & Tebang Pohon UP3 Sorong"], "row", say);
+    var FL=(window.Rabas && window.Rabas.filterLabel) ? window.Rabas.filterLabel() : "";
+    var DK=await deck(JSZip, now, ["Paparan Realisasi Pekerjaan ROW","Rabas & Tebang Pohon UP3 Sorong"].concat(FL?[FL]:[]), "row", say);
     await addSlides(M, DK, say);
     var blob=await DK.finish();
     return {blob:blob, name:"Paparan Realisasi ROW UP3 Sorong s.d "+BULAN[M.cur]+" 2026.pptx", slides:DK.count()};

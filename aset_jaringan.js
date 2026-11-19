@@ -203,7 +203,9 @@ UP3 SORONG,ULP SORONG KOTA,SAOKA,"13,65",25
   };
   function monthSub() {
     const m = window.Rabas ? window.Rabas.month : "all";
-    return (m === "all" || m == null) ? "ROW 2026 · semua bulan" : "ROW 2026 · " + window.Rabas.MONTHS_LONG[m];
+    const base = (m === "all" || m == null) ? "ROW 2026 · semua bulan" : "ROW 2026 · " + window.Rabas.MONTHS_LONG[m];
+    const fl = (window.Rabas && window.Rabas.filterLabel) ? window.Rabas.filterLabel() : "";
+    return fl ? base + " · terfilter" : base;
   }
 
   window.renderAsetJaringan = function () {
@@ -318,7 +320,7 @@ UP3 SORONG,ULP SORONG KOTA,SAOKA,"13,65",25
     const months = R.activeMonths().filter((m) => sel === "all" || sel == null || m === sel);
     const byUlp = R.monthlyByUlp();
     const names = (LAST_ULPS.length ? LAST_ULPS : Object.keys(byUlp)).filter((u) => byUlp[u]);
-    const periodTxt = (sel === "all" || sel == null) ? "Semua Bulan 2026" : ML[sel] + " 2026";
+    const periodTxt = ((sel === "all" || sel == null) ? "Semua Bulan 2026" : ML[sel] + " 2026") + (R.filterLabel && R.filterLabel() ? " · " + R.filterLabel() : "");
 
     // Sheet 1 — Rekap bulanan per ULP
     const s1 = [];
@@ -376,7 +378,7 @@ UP3 SORONG,ULP SORONG KOTA,SAOKA,"13,65",25
     if(!window.Rabas) return;
     const R = window.Rabas, ML = R.MONTHS_LONG, sel = R.month;
     const names = LAST_ULPS.length ? LAST_ULPS : [];
-    const periodTxt = (sel === "all" || sel == null) ? "Semua Bulan 2026" : ML[sel] + " 2026";
+    const periodTxt = ((sel === "all" || sel == null) ? "Semua Bulan 2026" : ML[sel] + " 2026") + (R.filterLabel && R.filterLabel() ? " · " + R.filterLabel() : "");
     const d = R.dailyByUlp ? R.dailyByUlp(names) : { dates: [], ulps: [] };
     const ulps = d.ulps || [];
 
@@ -571,7 +573,7 @@ UP3 SORONG,ULP SORONG KOTA,SAOKA,"13,65",25
     const vendors = mx._vendors || [];
     const sel = window.Rabas.month;
     const subEl = document.querySelector("#vendor-sub");
-    if (subEl) subEl.textContent = (sel === "all" || sel == null) ? "Akumulasi semua bulan 2026" : window.Rabas.MONTHS_LONG[sel] + " 2026";
+    if (subEl) subEl.textContent = ((sel === "all" || sel == null) ? "Akumulasi semua bulan 2026" : window.Rabas.MONTHS_LONG[sel] + " 2026") + (window.Rabas.filterLabel() ? " · " + window.Rabas.filterLabel() : "");
 
     // --- Tube gauges per ULP: Rabas (kms) & Tebang (btg) tiap mitra ---
     const legend = document.querySelector("#vendor-legend");
@@ -690,16 +692,120 @@ UP3 SORONG,ULP SORONG KOTA,SAOKA,"13,65",25
       box.appendChild(chip);
     });
   }
+  // Filter Mitra & rentang tanggal: menyusun ulang data ROW lalu render ulang seluruh menu.
+  function applyExtra() {
+    const R = window.Rabas; if (!R) return;
+    R.applyFilters();
+    if (R.month !== "all" && R.activeMonths().indexOf(R.month) < 0) R.month = "all";
+    buildMonthFilter(); buildExtraFilter(); window.renderAsetJaringan();
+  }
+  function titleMitra(v) { return String(v).replace(/^PT\.?\s+/i, "PT ").replace(/\s+/g, " ").trim(); }
+  // ---- Dropdown checklist Mitra ----
+  function buildMitraDropdown(R, box) {
+    if (!box._dd) {
+      box.innerHTML = "";
+      const btn = el("button", "aj-dd-btn");
+      btn.type = "button"; btn.setAttribute("aria-haspopup", "listbox"); btn.setAttribute("aria-expanded", "false");
+      btn.innerHTML = '<span class="aj-dd-txt">Semua Mitra</span><span class="aj-dd-cnt" hidden></span><span class="aj-dd-car">\u25BE</span>';
+      const panel = el("div", "aj-dd-panel"); panel.hidden = true;
+      const q = el("input", "aj-dd-q"); q.type = "search"; q.placeholder = "Cari mitra\u2026"; q.setAttribute("aria-label", "Cari mitra");
+      const acts = el("div", "aj-dd-acts");
+      const bAll = el("button", "aj-dd-a", "Pilih semua"); bAll.type = "button";
+      const info = el("span", "aj-dd-info");
+      acts.appendChild(bAll); acts.appendChild(info);
+      const list = el("div", "aj-dd-list"); list.setAttribute("role", "listbox"); list.setAttribute("aria-multiselectable", "true");
+      const foot = el("div", "aj-dd-foot");
+      const bOk = el("button", "aj-dd-ok", "Selesai"); bOk.type = "button"; foot.appendChild(bOk);
+      panel.appendChild(q); panel.appendChild(acts); panel.appendChild(list); panel.appendChild(foot);
+      box.appendChild(btn); box.appendChild(panel);
+      const setOpen = (o) => {
+        panel.hidden = !o; btn.setAttribute("aria-expanded", o ? "true" : "false"); box.classList.toggle("open", o);
+        if (o) { q.value = ""; filterList(); setTimeout(() => q.focus(), 0); }
+      };
+      const filterList = () => {
+        const t = q.value.trim().toLowerCase();
+        list.querySelectorAll(".aj-dd-opt").forEach((o) => { o.hidden = !!t && o.dataset.k.indexOf(t) < 0; });
+      };
+      btn.onclick = () => setOpen(panel.hidden);
+      bOk.onclick = () => { setOpen(false); btn.focus(); };
+      q.oninput = filterList;
+      bAll.onclick = () => { R.vendors = []; applyExtra(); };
+      document.addEventListener("click", (e) => { if (!panel.hidden && !box.contains(e.target)) setOpen(false); });
+      document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !panel.hidden) { setOpen(false); btn.focus(); } });
+      box._dd = { btn, panel, list, q, info, filterList };
+    }
+    const dd = box._dd;
+    const vs = R.allVendors().slice(), picked = R.vendors || [];
+    picked.forEach((v) => { if (vs.indexOf(v) < 0) vs.unshift(v); });
+    const all = picked.length === 0;
+    const st = dd.list.scrollTop;
+    dd.list.innerHTML = "";
+    const mkOpt = (label, checked, cls, key, title) => {
+      const lb = el("label", "aj-dd-opt" + (cls ? " " + cls : ""));
+      const cb = el("input"); cb.type = "checkbox"; cb.checked = checked;
+      const sp = el("span"); sp.textContent = label; if (title) lb.title = title;
+      lb.dataset.k = key; lb.appendChild(cb); lb.appendChild(sp);
+      dd.list.appendChild(lb); return cb;
+    };
+    const cAll = mkOpt("Semua Mitra", all, "aj-dd-opt--all", "semua mitra", "");
+    cAll.onchange = () => { R.vendors = []; applyExtra(); };
+    vs.forEach((v) => {
+      const cb = mkOpt(titleMitra(v), all || picked.indexOf(v) >= 0, "", titleMitra(v).toLowerCase(), v);
+      cb.onchange = () => {
+        // dari kondisi "Semua", hapus centang 1 mitra = semua mitra kecuali mitra tsb.
+        const arr = all ? vs.slice() : picked.slice(), i = arr.indexOf(v);
+        if (cb.checked) { if (i < 0) arr.push(v); } else if (i >= 0) arr.splice(i, 1);
+        R.vendors = (arr.length === vs.length || arr.length === 0) ? [] : arr;
+        applyExtra();
+      };
+    });
+    if (!vs.length) dd.list.appendChild(el("div", "aj-dd-empty", "Belum ada data mitra"));
+    dd.list.scrollTop = st;
+    dd.filterList();
+    const txt = dd.btn.querySelector(".aj-dd-txt"), cnt = dd.btn.querySelector(".aj-dd-cnt");
+    txt.textContent = all ? "Semua Mitra" : picked.length === 1 ? titleMitra(picked[0]) : picked.length + " mitra dipilih";
+    dd.btn.title = all ? "Semua Mitra" : picked.join(", ");
+    cnt.hidden = all; cnt.textContent = all ? "" : String(picked.length);
+    dd.btn.classList.toggle("on", !all);
+    dd.info.textContent = (all ? vs.length : picked.length) + " dari " + vs.length + " dipilih";
+  }
+  function buildExtraFilter() {
+    const R = window.Rabas, box = document.querySelector("#aj-filter-mitra"), from = document.querySelector("#aj-from"), to = document.querySelector("#aj-to");
+    if (!R || !box || !from || !to) return;
+    // Checklist dropdown mitra: boleh centang lebih dari satu; tanpa centang / semua = "Semua Mitra"
+    buildMitraDropdown(R, box);
+    const b = R.dateBounds();
+    [from, to].forEach((i) => { i.min = b.min; i.max = b.max; });
+    from.value = R.from || ""; to.value = R.to || "";
+    const note = document.querySelector("#aj-filter-note");
+    if (note) {
+      const fl = R.filterLabel();
+      const lim = R.source !== "live" ? "Data snapshot bulanan: rentang tanggal dibaca per bulan, dan filter mitra hanya berlaku pada bagian Mitra Pelaksana." : "";
+      note.innerHTML = (fl ? "Filter aktif — <b>" + fl + "</b>. Berlaku untuk KPI, grafik, matriks, rincian harian, Unduh Excel &amp; Unduh PPT." : "") + (fl && lim ? " " : "") + (fl ? lim : "");
+    }
+    if (!from._wired) {
+      from._wired = true;
+      const onDate = () => {
+        let f = from.value || null, t = to.value || null;
+        if (f && t && f > t) { const x = f; f = t; t = x; }
+        R.from = f; R.to = t; applyExtra();
+      };
+      from.onchange = onDate; to.onchange = onDate;
+      const rs = document.querySelector("#aj-range-reset");
+      if (rs) rs.onclick = () => { R.vendors = []; R.from = null; R.to = null; applyExtra(); };
+    }
+  }
   function start() {
     window.AsetJaringan.parseSnapshot();
     if (window.Rabas) window.Rabas.parseSnapshot();
     buildFilter();
     buildMonthFilter();
+    buildExtraFilter();
     window.renderAsetJaringan();
     Promise.allSettled([
       window.AsetJaringan.load(),
       window.Rabas ? window.Rabas.load() : Promise.resolve(),
-    ]).then(() => { buildFilter(); buildMonthFilter(); window.renderAsetJaringan(); });
+    ]).then(() => { buildFilter(); buildMonthFilter(); buildExtraFilter(); window.renderAsetJaringan(); });
   }
   let rowStarted = false;
   window.ROWView = { init: function(){ if(rowStarted) return; rowStarted = true; start(); } };
@@ -709,6 +815,6 @@ UP3 SORONG,ULP SORONG KOTA,SAOKA,"13,65",25
     Promise.all([
       window.AsetJaringan.load(),
       window.Rabas ? window.Rabas.load() : Promise.resolve(),
-    ]).then(() => { buildFilter(); buildMonthFilter(); window.renderAsetJaringan(); });
+    ]).then(() => { buildFilter(); buildMonthFilter(); buildExtraFilter(); window.renderAsetJaringan(); });
   };
 })();

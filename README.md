@@ -1,5 +1,12 @@
 # Paket Update GitHub — Dashboard Gangguan PLN UP3 Sorong
-Tanggal: 16 November 2026 · Versi cache terbaru: ?v=20261116a
+Tanggal: 19 November 2026 · Versi cache terbaru: ?v=20261119c
+
+## Pembaruan 19 November 2026 — Filter Mitra & Rentang Tanggal di menu ROW
+- Baris filter menu **ROW** kini memiliki **Mitra** (dropdown checklist: kotak cari, centang satu/beberapa mitra, "Semua Mitra" / "Pilih semua" = tanpa filter, tombol menampilkan jumlah mitra terpilih) dan **Tanggal** (dari – s/d) beserta tombol **Reset**.
+- Filter berlaku untuk KPI, tren bulanan, matriks ULP × bulan, rekap mitra, rincian harian, **Unduh Excel** dan **Unduh PPT** ROW;
+  filter aktif tercantum di bawah baris filter, di judul Excel, dan di cover PPT.
+- PPT ROW dengan rentang tanggal: target kumulatif dihitung untuk bulan-bulan dalam rentang; bulan di luar rentang tampil abu-abu.
+- File berubah: index.html, rabas.js, aset_jaringan.js, row-ppt.js.
 
 ## Pembaruan 16 November 2026 — Sub menu **PPT Evaluasi FGTM**
 - Menu samping **Gangguan → PPT Evaluasi FGTM**: pilih Bulan, Minggu (M1 = tgl 1–7 · M2 = 8–14 · M3 = 15–21 · M4 = 22–akhir),
@@ -54,6 +61,8 @@ Tanggal: 16 November 2026 · Versi cache terbaru: ?v=20261116a
 | ao-ppt.js | TIMPA | ekspor PPT Monitoring AO (urutan daftar pekerjaan) |
 | ao-template.pptx | PASTIKAN ADA | template PPT AO_M1_November (sama dengan versi 2 Nov) |
 | fdx-ppt.js | BARU | ekspor PPT Monitoring 4DX |
+| rabas.js | TIMPA | data ROW + filter mitra & rentang tanggal |
+| aset_jaringan.js | TIMPA | tampilan filter mitra & tanggal di menu ROW |
 | row-ppt.js | TIMPA | ekspor PPT Paparan ROW + kerangka paparan bersama (dipakai juga slide ROW di PPT FGTM) |
 | fgtm-ppt.js | BARU | sub menu & ekspor PPT Evaluasi FGTM mingguan |
 | fgtm-template.js | BARU | template PPT Evaluasi FGTM (base64), dimuat hanya saat unduh |
@@ -64,11 +73,12 @@ File lain di repo (ppt-template.pptx, rabas.js, aset_jaringan.js, dll.) TIDAK pe
 
 ## Cara upload
 1. Ekstrak ZIP ini.
-2. GitHub → buka repo → **Add file → Upload files** → seret 13 file di atas (tanpa folder) ke ROOT repo.
+2. GitHub → buka repo → **Add file → Upload files** → seret 15 file di atas (tanpa folder) ke ROOT repo.
 3. Isi pesan commit, mis. "Sub menu PPT Evaluasi FGTM 16 Nov 2026" → **Commit changes** ke branch main.
 4. Tunggu ±1–2 menit hingga GitHub Pages selesai deploy, lalu buka situs dengan **Ctrl+F5**.
 
 ## Uji setelah deploy
+- Menu **ROW** → pilih **Mitra** dan/atau **Tanggal** → angka KPI, grafik, matriks & rekap mitra berubah sesuai filter → **Reset** mengembalikan semua.
 - Menu **Gangguan → PPT Evaluasi FGTM** → pilih Bulan & Minggu → **⤓ Download PPT Evaluasi FGTM** → file "Evaluasi FGTM M<minggu> <Bulan> 2026 - UP3 Sorong.pptx".
 - Menu **Realisasi Workplan** → (opsional) pilih Bulan → **⤓ Unduh PPT** → file "Paparan Realisasi Workplan UP3 Sorong s.d <Bulan> 2026.pptx".
 - Menu **Monitoring AO** → **⤓ Unduh PPT** → file "AO_M<minggu>_<Bulan>_2026.pptx".

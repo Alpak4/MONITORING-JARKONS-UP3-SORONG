@@ -99,43 +99,49 @@
     return { y, m: mi, d, key: y + "-" + String(mi + 1).padStart(2, "0") + "-" + String(d).padStart(2, "0") };
   }
 
-  // Agregasi log harian -> per (ULP, penyulang) dengan rincian bulan {k:{m:kms}, t:{m:btg}}.
-  // Sekaligus bangun rincian per (ULP, vendor pelaksana) -> simpan di out.vendors.
-  function aggregate(text) {
-    const rows = parseCSV(text);
-    const map = {}, vmap = {}, dmap = {};
+  // Log harian -> baris mentah {ulp,pny,ven,m,key,kms,btg} (key null bila tanpa tanggal hari).
+  function parseRaw(text) {
+    const rows = parseCSV(text), raw = [];
     for (let i = 7; i < rows.length; i++) {
       const r = rows[i]; if (!r) continue;
       const ulp = (r[2] || "").trim().replace(/^ULP\s+/i, "");
       const pny = (r[3] || "").trim();
       if (!ulp || !pny) continue;
       const mi = monthOf(r[5]); if (mi < 0) continue;
-      const kms = num(r[7]), btg = num(r[11]);
-      const key = ulp + "|" + pny;
-      if (!map[key]) map[key] = { ulp, pny, k: {}, t: {} };
-      map[key].k[mi] = +(((map[key].k[mi] || 0) + kms)).toFixed(2);
-      map[key].t[mi] = (map[key].t[mi] || 0) + btg;
-      const ven = (r[4] || "").trim();
-      if (ven) {
-        const vk = ulp + "|" + ven;
-        if (!vmap[vk]) vmap[vk] = { ulp, ven, k: {}, t: {} };
-        vmap[vk].k[mi] = +(((vmap[vk].k[mi] || 0) + kms)).toFixed(2);
-        vmap[vk].t[mi] = (vmap[vk].t[mi] || 0) + btg;
-      }
-      // rincian harian per (tanggal, ULP)
       const dy = dayOf(r[5]);
-      if (dy) {
-        const dk = dy.key + "|" + ulp;
-        if (!dmap[dk]) dmap[dk] = { y: dy.y, m: dy.m, d: dy.d, key: dy.key, ulp, kms: 0, btg: 0 };
-        dmap[dk].kms = +(((dmap[dk].kms) + kms)).toFixed(2);
-        dmap[dk].btg += btg;
-      }
+      raw.push({ ulp, pny, ven: (r[4] || "").trim(), m: mi, key: dy ? dy.key : null, y: dy ? dy.y : null, d: dy ? dy.d : null, kms: num(r[7]), btg: num(r[11]) });
     }
-    const out = Object.values(map);
-    out.vendors = Object.values(vmap);
-    out.daily = Object.values(dmap);
-    return out;
+    return raw;
   }
+  // Baris mentah -> per (ULP, penyulang) & per (ULP, vendor) dengan rincian bulan, plus rincian harian per (tanggal, ULP).
+  function buildFrom(raw) {
+    const map = {}, vmap = {}, dmap = {};
+    raw.forEach((x) => {
+      const key = x.ulp + "|" + x.pny, mi = x.m;
+      if (!map[key]) map[key] = { ulp: x.ulp, pny: x.pny, k: {}, t: {} };
+      map[key].k[mi] = +(((map[key].k[mi] || 0) + x.kms)).toFixed(2);
+      map[key].t[mi] = (map[key].t[mi] || 0) + x.btg;
+      if (x.ven) {
+        const vk = x.ulp + "|" + x.ven;
+        if (!vmap[vk]) vmap[vk] = { ulp: x.ulp, ven: x.ven, k: {}, t: {} };
+        vmap[vk].k[mi] = +(((vmap[vk].k[mi] || 0) + x.kms)).toFixed(2);
+        vmap[vk].t[mi] = (vmap[vk].t[mi] || 0) + x.btg;
+      }
+      if (x.key) {
+        const dk = x.key + "|" + x.ulp;
+        if (!dmap[dk]) dmap[dk] = { y: x.y, m: mi, d: x.d, key: x.key, ulp: x.ulp, kms: 0, btg: 0 };
+        dmap[dk].kms = +(((dmap[dk].kms) + x.kms)).toFixed(2);
+        dmap[dk].btg += x.btg;
+      }
+    });
+    return { records: Object.values(map), vendors: Object.values(vmap), daily: Object.values(dmap) };
+  }
+  // Bulan m (2026) beririsan dengan rentang [from, to] (ISO yyyy-mm-dd, boleh kosong)?
+  function monthInRange(m, from, to) {
+    const ms = "2026-" + String(m + 1).padStart(2, "0") + "-01", me = "2026-" + String(m + 1).padStart(2, "0") + "-31";
+    return (!from || me >= from) && (!to || ms <= to);
+  }
+  function pickMonths(o, ok) { const r = {}; Object.keys(o).forEach((m) => { if (ok(+m)) r[m] = o[m]; }); return r; }
 
   // --- pencocokan nama penyulang ke daftar aset ---
   function ed(a, b) {
@@ -169,13 +175,55 @@
     dailyRecords: null,   // [{y,m,d,key,ulp,kms,btg}]
     source: "snapshot",
     month: "all",         // "all" atau 0..11
+    vendors: [],          // filter mitra pelaksana (boleh lebih dari satu); kosong = semua mitra
+    from: null, to: null, // filter rentang tanggal (ISO yyyy-mm-dd) atau null
+    raw: null,            // baris harian mentah (hanya data live)
     MONTHS_ID, MONTHS_LONG,
 
     parseSnapshot() {
-      this.records = SNAPSHOT_M.map((r) => ({ ulp: r.ulp, pny: r.pny, k: Object.assign({}, r.k), t: Object.assign({}, r.t) }));
-      this.vendorRecords = VENDOR_M.map((r) => ({ ulp: r.ulp, ven: r.ven, k: Object.assign({}, r.k), t: Object.assign({}, r.t) }));
-      this.dailyRecords = [];   // snapshot bulanan tidak menyimpan rincian harian
+      this.raw = null;
+      this.applyFilters();
       return this.records;
+    },
+
+    // Susun ulang records / vendorRecords / dailyRecords sesuai filter mitra & rentang tanggal.
+    applyFilters() {
+      const vs = (this.vendors || []).slice(), all = !vs.length, f = this.from || null, t = this.to || null;
+      if (this.raw) {
+        const rows = this.raw.filter((x) => (all || vs.indexOf(x.ven) >= 0) &&
+          (x.key ? ((!f || x.key >= f) && (!t || x.key <= t)) : monthInRange(x.m, f, t)));
+        const b = buildFrom(rows);
+        this.records = b.records; this.vendorRecords = b.vendors; this.dailyRecords = b.daily;
+      } else {
+        // snapshot bulanan: rentang tanggal dibaca per bulan; mitra hanya tersedia pada rekap mitra
+        const ok = (m) => monthInRange(m, f, t);
+        this.records = SNAPSHOT_M.map((r) => ({ ulp: r.ulp, pny: r.pny, k: pickMonths(r.k, ok), t: pickMonths(r.t, ok) }));
+        this.vendorRecords = VENDOR_M.filter((r) => all || vs.indexOf(r.ven) >= 0).map((r) => ({ ulp: r.ulp, ven: r.ven, k: pickMonths(r.k, ok), t: pickMonths(r.t, ok) }));
+        this.dailyRecords = [];
+      }
+      return this.records;
+    },
+    // Semua mitra (tanpa filter), urut volume rabas terbesar — untuk pilihan filter.
+    allVendors() {
+      const tot = {};
+      if (this.raw) this.raw.forEach((x) => { if (x.ven) tot[x.ven] = (tot[x.ven] || 0) + x.kms; });
+      else VENDOR_M.forEach((r) => { Object.keys(r.k).forEach((m) => { tot[r.ven] = (tot[r.ven] || 0) + r.k[m]; }); });
+      return Object.keys(tot).sort((a, b) => tot[b] - tot[a]);
+    },
+    // Tanggal data pertama & terakhir (ISO) — batas input rentang tanggal.
+    dateBounds() {
+      let min = null, max = null;
+      (this.raw || []).forEach((x) => { if (!x.key) return; if (!min || x.key < min) min = x.key; if (!max || x.key > max) max = x.key; });
+      return { min: min || "2026-01-01", max: max || "2026-12-31", daily: !!min };
+    },
+    // Ringkasan filter aktif untuk subjudul, Excel & PPT ("" bila tak ada filter).
+    filterLabel() {
+      const p = [];
+      const fd = (s) => { const a = s.split("-"); return +a[2] + " " + MONTHS_ID[+a[1] - 1] + " " + a[0]; };
+      const vs = this.vendors || [];
+      if (vs.length) p.push("Mitra: " + (vs.length <= 2 ? vs.join(", ") : vs.slice(0, 2).join(", ") + " +" + (vs.length - 2) + " mitra"));
+      if (this.from || this.to) p.push("Tanggal: " + (this.from ? fd(this.from) : "awal data") + " – " + (this.to ? fd(this.to) : "akhir data"));
+      return p.join(" · ");
     },
 
     async load() {
@@ -187,12 +235,14 @@
         if (res.ok) {
           const body = await res.text();
           if (body && body.length > 200) {
-            const recs = aggregate(body);
-            this.records = recs;
-            this.vendorRecords = recs.vendors && recs.vendors.length ? recs.vendors : VENDOR_M;
-            this.dailyRecords = recs.daily || [];
-            this.source = "live";
-            return this.records;
+            const raw = parseRaw(body);
+            if (raw.length) {
+              this.raw = raw;
+              this.vendors = (this.vendors || []).filter((vn) => raw.some((x) => x.ven === vn));
+              this.applyFilters();
+              this.source = "live";
+              return this.records;
+            }
           }
         }
       } catch (e) { /* fallback */ }

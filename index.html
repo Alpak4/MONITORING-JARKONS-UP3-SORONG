@@ -162,6 +162,40 @@
   .aj-chip:hover{border-color:var(--blue); color:var(--blue)}
   .aj-chip.on{background:var(--blue); border-color:var(--blue); color:#fff}
   .aj-chip--all.on{background:var(--navy); border-color:var(--navy)}
+  .aj-range input[type=date]{font-family:inherit; font-size:12.5px; font-weight:600; color:var(--ink); background:#fff; border:1px solid var(--line); border-radius:9px; padding:7px 9px; box-shadow:var(--shadow); outline:none}
+  .aj-range input[type=date]:focus{border-color:var(--blue)}
+  .aj-range-sep{font-size:11.5px; font-weight:700; color:var(--muted)}
+  .aj-dd{position:relative}
+  .aj-dd-btn{display:inline-flex; align-items:center; gap:8px; min-width:210px; max-width:300px; font-family:inherit; font-size:12.5px; font-weight:700; color:var(--ink); background:#fff; border:1px solid var(--line); border-radius:9px; padding:7px 10px; box-shadow:var(--shadow); cursor:pointer; text-align:left}
+  .aj-dd-btn:hover,.aj-dd.open .aj-dd-btn{border-color:var(--blue)}
+  .aj-dd-btn.on{border-color:var(--blue); color:var(--blue)}
+  .aj-dd-txt{flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+  .aj-dd-cnt{background:var(--blue); color:#fff; border-radius:10px; font-size:11px; padding:1px 7px}
+  .aj-dd-car{color:var(--muted); font-size:11px; transition:transform .15s}
+  .aj-dd.open .aj-dd-car{transform:rotate(180deg)}
+  .aj-dd-panel{position:absolute; z-index:60; top:calc(100% + 6px); left:0; width:320px; max-width:calc(100vw - 32px); background:#fff; border:1px solid var(--line); border-radius:12px; box-shadow:0 12px 32px rgba(11,60,110,.18); padding:10px}
+  .aj-dd-panel[hidden]{display:none}
+  .aj-dd-q{width:100%; box-sizing:border-box; font-family:inherit; font-size:12.5px; border:1px solid var(--line); border-radius:8px; padding:7px 9px; outline:none}
+  .aj-dd-q:focus{border-color:var(--blue)}
+  .aj-dd-acts{display:flex; justify-content:space-between; margin:8px 2px 4px}
+  .aj-dd-a{font-family:inherit; font-size:11.5px; font-weight:700; color:var(--blue); background:none; border:0; padding:2px; cursor:pointer}
+  .aj-dd-a:hover{text-decoration:underline}
+  .aj-dd-info{font-size:11.5px; color:var(--muted); font-weight:600}
+  .aj-dd-list{max-height:260px; overflow:auto; border-top:1px solid var(--line); padding-top:4px}
+  .aj-dd-opt{display:flex; align-items:center; gap:9px; padding:7px 6px; border-radius:7px; font-size:12.5px; font-weight:600; color:var(--ink); cursor:pointer; text-transform:none; letter-spacing:normal; margin:0}
+  .aj-dd-opt[hidden]{display:none}
+  #aj-filter-mitra .aj-dd-opt{font-size:12.5px; font-weight:600; color:var(--ink); text-transform:none; letter-spacing:normal}
+  #aj-filter-mitra .aj-dd-opt--all{font-weight:800; color:var(--navy)}
+  .aj-dd-opt:hover{background:#EEF4FB}
+  .aj-dd-opt input{width:16px; height:16px; margin:0; accent-color:var(--blue); flex:none; cursor:pointer}
+  .aj-dd-opt span{overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+  .aj-dd-opt--all{font-weight:800; color:var(--navy); border-bottom:1px dashed var(--line); border-radius:7px 7px 0 0; margin-bottom:2px}
+  .aj-dd-empty{font-size:12px; color:var(--muted); padding:8px 6px}
+  .aj-dd-foot{display:flex; justify-content:flex-end; border-top:1px solid var(--line); margin-top:6px; padding-top:8px}
+  .aj-dd-ok{font-family:inherit; font-size:12px; font-weight:700; color:#fff; background:var(--blue); border:0; border-radius:8px; padding:6px 14px; cursor:pointer}
+  .aj-fnote{flex-basis:100%; font-size:11.5px; color:var(--muted)}
+  .aj-fnote:empty{display:none}
+  .aj-fnote b{color:var(--blue)}
   .barcell__n{font-weight:800; color:var(--navy); font-size:13px}
 
   /* ---------- Mitigasi ---------- */
@@ -1064,6 +1098,18 @@ nav.tabbar .tab.tab-sub svg{width:14px;height:14px}
       <label>Filter Bulan</label>
       <div class="aj-chips" id="aj-filter-bulan"></div>
     </div>
+    <div class="grp">
+      <label>Mitra</label>
+      <div class="aj-dd" id="aj-filter-mitra"></div>
+    </div>
+    <div class="grp aj-range">
+      <label for="aj-from">Tanggal</label>
+      <input type="date" id="aj-from" min="2026-01-01" max="2026-12-31" title="Dari tanggal">
+      <span class="aj-range-sep">s/d</span>
+      <input type="date" id="aj-to" min="2026-01-01" max="2026-12-31" title="Sampai tanggal">
+      <button type="button" class="btn-reset" id="aj-range-reset" title="Hapus filter mitra &amp; tanggal">Reset</button>
+    </div>
+    <div class="aj-fnote" id="aj-filter-note"></div>
   </div>
   <main>
     <div class="kpi-grid" id="aset-jar-kpi"></div>
@@ -1346,8 +1392,8 @@ nav.tabbar .tab.tab-sub svg{width:14px;height:14px}
 <script src="data_csv.js"></script>
 <script src="data.js"></script>
 <script src="mitigasi.js"></script>
-<script src="rabas.js"></script>
-<script src="aset_jaringan.js"></script>
+<script src="rabas.js?v=20261119c"></script>
+<script src="aset_jaringan.js?v=20261119c"></script>
 <script src="charts.js"></script>
 <script src="app.js"></script>
 <script src="pln-data.js"></script>
@@ -1362,7 +1408,7 @@ nav.tabbar .tab.tab-sub svg{width:14px;height:14px}
 <script src="susut.js?v=20261023k"></script>
 <script src="ao-ppt.js?v=20261103c"></script>
 <script src="fdx-ppt.js?v=20261103a"></script>
-<script src="row-ppt.js?v=20261116a"></script>
+<script src="row-ppt.js?v=20261119a"></script>
 <script src="wp-ppt.js?v=20261103g"></script>
 <script src="fgtm-ppt.js?v=20261116a"></script>
 <script src="ppt-export.js?v=20261116a"></script>
