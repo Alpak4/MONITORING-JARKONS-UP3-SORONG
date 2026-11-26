@@ -1,5 +1,16 @@
 # Paket Update GitHub — Dashboard Gangguan PLN UP3 Sorong
-Tanggal: 19 November 2026 · Versi cache terbaru: ?v=20261119c
+Tanggal: 26 November 2026 · Versi cache terbaru: ?v=20261126b
+
+## Pembaruan 26 November 2026 (rev. b) — Menu **Kondisi Sistem UP3** = Progres Penormalan Kelistrikan Sistem Sorong
+- Isi menu diganti (data evaluasi FGTM sebelumnya dihapus dari menu ini) menjadi papan **Progres Penormalan Kelistrikan Sistem Sorong**
+  sesuai PPT "Progress_Penormalan_Kelistrikan_Sorong_Editabel_v3_1":
+  - 6 kartu: ULP, Penyulang, Beban (kW), Beban Captive (kW), Trafo, Pelanggan — jumlah terdampak, terdampak (masih padam), sudah nyala, % pulih
+  - Engine yang beroperasi: PLTMG MPP, Sewatama, Max Power, Klasaman, Klademak — MW & status per unit (Operasi/Gangguan/Pemeliharaan/Standby, × merah)
+  - Daerah/wilayah yang masih terdampak per ULP · Catatan/perkembangan (pembuka + baris otomatis DMP & unit tidak beroperasi + penutup)
+  - Dokumentasi progres & perbaikan (maks. 4 foto)
+- Data diisi langsung di menu (formulir di bawah papan), tersimpan otomatis di browser; **Simpan/Muat data (JSON)** untuk pindah perangkat;
+  **Salin ringkasan WA**; **⤓ Unduh PPT** menghasilkan PPT format yang sama ("Progres Penormalan Kelistrikan Sistem Sorong - <tgl> <jam> WIT.pptx").
+- File berubah: index.html, kondisi.js, kondisi-template.js (BARU).
 
 ## Pembaruan 19 November 2026 — Filter Mitra & Rentang Tanggal di menu ROW
 - Baris filter menu **ROW** kini memiliki **Mitra** (dropdown checklist: kotak cari, centang satu/beberapa mitra, "Semua Mitra" / "Pilih semua" = tanpa filter, tombol menampilkan jumlah mitra terpilih) dan **Tanggal** (dari – s/d) beserta tombol **Reset**.
@@ -64,7 +75,9 @@ Tanggal: 19 November 2026 · Versi cache terbaru: ?v=20261119c
 | rabas.js | TIMPA | data ROW + filter mitra & rentang tanggal |
 | aset_jaringan.js | TIMPA | tampilan filter mitra & tanggal di menu ROW |
 | row-ppt.js | TIMPA | ekspor PPT Paparan ROW + kerangka paparan bersama (dipakai juga slide ROW di PPT FGTM) |
-| fgtm-ppt.js | BARU | sub menu & ekspor PPT Evaluasi FGTM mingguan |
+| fgtm-ppt.js | TIMPA | sub menu & ekspor PPT Evaluasi FGTM mingguan (+ fungsi hitung untuk menu Kondisi Sistem) |
+| kondisi.js | TIMPA | menu Kondisi Sistem UP3 Sorong (progres penormalan) |
+| kondisi-template.js | BARU | template PPT Progres Penormalan (base64), dimuat saat unduh |
 | fgtm-template.js | BARU | template PPT Evaluasi FGTM (base64), dimuat hanya saat unduh |
 | wp-ppt.js | BARU | ekspor PPT Paparan Realisasi Workplan (perlu row-ppt.js) |
 | fdx-template.js | BARU | template PPT (cover & header) dikemas base64, dimuat hanya saat Unduh PPT |
@@ -73,11 +86,12 @@ File lain di repo (ppt-template.pptx, rabas.js, aset_jaringan.js, dll.) TIDAK pe
 
 ## Cara upload
 1. Ekstrak ZIP ini.
-2. GitHub → buka repo → **Add file → Upload files** → seret 15 file di atas (tanpa folder) ke ROOT repo.
-3. Isi pesan commit, mis. "Sub menu PPT Evaluasi FGTM 16 Nov 2026" → **Commit changes** ke branch main.
+2. GitHub → buka repo → **Add file → Upload files** → seret 18 file di atas (tanpa folder) ke ROOT repo.
+3. Isi pesan commit, mis. "Progres Penormalan Sistem Sorong 26 Nov 2026" → **Commit changes** ke branch main.
 4. Tunggu ±1–2 menit hingga GitHub Pages selesai deploy, lalu buka situs dengan **Ctrl+F5**.
 
 ## Uji setelah deploy
+- Menu **Kondisi Sistem UP3** → ubah angka/status unit → papan berubah → **⤓ Unduh PPT** → file "Progres Penormalan Kelistrikan Sistem Sorong - <tgl> <jam> WIT.pptx".
 - Menu **ROW** → pilih **Mitra** dan/atau **Tanggal** → angka KPI, grafik, matriks & rekap mitra berubah sesuai filter → **Reset** mengembalikan semua.
 - Menu **Gangguan → PPT Evaluasi FGTM** → pilih Bulan & Minggu → **⤓ Download PPT Evaluasi FGTM** → file "Evaluasi FGTM M<minggu> <Bulan> 2026 - UP3 Sorong.pptx".
 - Menu **Realisasi Workplan** → (opsional) pilih Bulan → **⤓ Unduh PPT** → file "Paparan Realisasi Workplan UP3 Sorong s.d <Bulan> 2026.pptx".

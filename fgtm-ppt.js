@@ -470,5 +470,11 @@
     setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 1500);
   }
 
-  window.FGTMPPT = { build: build, download: download, initView: initView, _model: model };
+  window.FGTMPPT = { build: build, download: download, initView: initView, _model: model,
+    // dipakai menu "Kondisi Sistem UP3 Sorong" (kondisi.js) agar angka web = angka PPT
+    core: { model:model, baseRecords:baseRecords, win:win, inWin:inWin, prevWin:prevWin, wLabel:wLabel, delta:delta, stColor:stColor,
+      countBy:countBy, topN:topN, sortT:sortT, trip:trip, indik:indik, penyebab:penyebab, dd:dd, weekNote:weekNote, colItems:colItems,
+      defaultWeek:defaultWeek, iso:iso, parseIso:parseIso, loadOpts:loadOpts, saveOpts:saveOpts,
+      nf:nf, p0:p0, p1:p1, pct:pct, sum:sum, cut:cut, cap1:cap1, list:list, tb:tb, esc:esc,
+      KNAMA:KNAMA, TINDAK:TINDAK, ULP4:ULP4, UCLR:UCLR, KCLR:KCLR, BULAN:BULAN, BL3:BL3, YEAR:YEAR, C_UP:C_UP, C_DOWN:C_DOWN, C_FLAT:C_FLAT } };
 })();

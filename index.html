@@ -675,6 +675,110 @@ nav.tabbar .tab.tab-sub svg{width:14px;height:14px}
 .fp-tbl th{background:#0B3C6E;color:#fff;text-align:left;padding:8px 10px;font-weight:700}
 .fp-tbl td{padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
 .fp-tbl tr:nth-child(even) td{background:#F7F9FC}
+.ks-foot{font-size:11.5px;color:var(--muted);margin-top:4px}
+.kn-ctl{margin-top:4px}
+.kn-ctl__row{display:flex;flex-wrap:wrap;gap:12px 16px;align-items:flex-end}
+.kn-ctl__row label,.kn-fld label,.kn-f-daerah label{display:block;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.3px;margin-bottom:5px}
+.kn-ctl input,.kn-forms input[type=text],.kn-forms input:not([type]),.kn-forms input[type=number],.kn-forms textarea,.kn-forms select{font:inherit;font-size:13px;padding:7px 9px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink);box-sizing:border-box}
+.kn-ctl input:focus,.kn-forms input:focus,.kn-forms textarea:focus,.kn-forms select:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(18,115,196,.12)}
+.kn-hint{display:block;font-size:10.5px;color:var(--muted);margin-top:3px;max-width:220px}
+.kn-ctl__act{display:flex;gap:8px;margin-left:auto;flex-wrap:wrap}
+.kn-ctl__act .ppt-btn{padding:10px 16px;font-size:13px}
+.kn-ctl__row2{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;margin-top:12px;padding-top:10px;border-top:1px dashed var(--line)}
+.kn-save{font-size:11.5px;color:#0F7A3D;font-weight:600}
+.kn-save--err{color:#B3261E}
+.kn-tools{display:flex;flex-wrap:wrap;gap:4px 14px}
+.kn-link{font:inherit;font-size:12px;font-weight:700;color:var(--blue);background:none;border:0;padding:2px 0;cursor:pointer}
+.kn-link:hover{text-decoration:underline}
+.kn-link--red{color:#B3261E}
+.kn-wa-box{width:100%;margin-top:10px;font:12px/1.5 ui-monospace,monospace;border:1px solid var(--line);border-radius:8px;padding:8px}
+.kn-board{margin-top:16px;background:#fff;border:1px solid #CFDAE6;border-radius:14px;overflow:hidden;box-shadow:var(--shadow)}
+.kn-board__h{background:#0B3C6E;color:#fff;text-align:center;padding:16px 14px 12px;border-bottom:4px solid #12A6C8}
+.kn-board__h h2{margin:0;font-family:"Times New Roman",Georgia,serif;font-size:clamp(17px,2.2vw,26px);letter-spacing:.5px}
+.kn-board__h div{margin-top:6px;font-family:"Times New Roman",Georgia,serif;font-size:12px;font-weight:700;letter-spacing:.3px}
+.kn-cards{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;padding:12px}
+@media(max-width:1100px){.kn-cards{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:560px){.kn-cards{grid-template-columns:repeat(2,1fr)}}
+.kn-card{border:1.5px solid #0B3C6E;border-radius:10px;overflow:hidden;text-align:center;display:flex;flex-direction:column}
+.kn-card__h{background:#0B3C6E;color:#fff;font-family:"Times New Roman",Georgia,serif;font-weight:700;font-size:13px;padding:7px 4px}
+.kn-card__lbl{font-size:9.5px;font-weight:700;color:#5B6573;letter-spacing:.4px;margin-top:6px;text-transform:uppercase}
+.kn-card__v{font-family:"Times New Roman",Georgia,serif;font-size:28px;font-weight:700;color:#0B3C6E;line-height:1.1}
+.kn-card__row{display:grid;grid-template-columns:1fr auto 1fr;align-items:end;gap:4px;padding:4px 8px 4px;border-top:1px solid #E4EAF1;margin:4px 8px 0}
+.kn-card__row div{display:flex;flex-direction:column;font-family:"Times New Roman",Georgia,serif}
+.kn-card__row span{font-size:8.5px;font-weight:700;text-transform:uppercase;white-space:nowrap}
+.kn-card__row b{font-size:14px}
+.kn-card__pct{font-family:Inter,system-ui,sans-serif!important;font-size:15px;font-weight:800;color:#1273C4}
+.kn-card__pct.ok{color:#1F9D57}
+.kn-red{color:#E2231A}.kn-green{color:#1F9D57}
+.kn-bar{height:5px;background:#FDECEA;margin-top:auto}
+.kn-bar i{display:block;height:100%;background:#1F9D57}
+.kn-grid{display:grid;grid-template-columns:1.3fr 1.1fr 1.8fr;grid-template-areas:"eng daerah notes" "eng foto foto";gap:10px;padding:0 12px 12px}
+@media(max-width:1000px){.kn-grid{grid-template-columns:1fr;grid-template-areas:"eng" "daerah" "notes" "foto"}}
+.kn-pn{border:1.5px solid #0B3C6E;border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
+.kn-pn--eng{grid-area:eng}.kn-pn--daerah{grid-area:daerah}.kn-pn--notes{grid-area:notes}.kn-pn--foto{grid-area:foto}
+.kn-pn__h{background:#0B3C6E;color:#fff;font-weight:800;font-size:12.5px;text-transform:uppercase;letter-spacing:.3px;padding:8px 12px;text-align:center}
+.kn-pn__b{padding:10px 14px;font-family:"Times New Roman",Georgia,serif;font-size:14px;color:#17375E;flex:1}
+.kn-pn__b ul{margin:4px 0 8px;padding-left:18px}
+.kn-pn__b li{margin:2px 0;line-height:1.35}
+.kn-notes li{text-align:justify}
+.kn-ulp b{display:block}
+.kn-muted{color:var(--muted);font-family:Inter,system-ui,sans-serif;font-size:12px;padding:6px 0}
+.kn-engs{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:6px 14px;padding:10px 12px;font-family:"Times New Roman",Georgia,serif;color:#17375E}
+.kn-eng__h{font-weight:700;font-size:13.5px;text-decoration:underline;display:flex;justify-content:space-between;gap:6px}
+.kn-eng__h span{font-family:Inter,system-ui,sans-serif;font-size:10px;text-decoration:none;color:#1F9D57;font-weight:800;align-self:center}
+.kn-eng ul{list-style:none;margin:4px 0 10px;padding:0}
+.kn-eng li{display:grid;grid-template-columns:minmax(0,1fr) auto 14px;align-items:center;gap:6px;font-size:13px;padding:1px 0;white-space:nowrap}
+.kn-eng li b{font-weight:400;color:#41556B;text-align:right}
+.kn-eng li em{font-style:normal;color:#E2231A;font-family:Inter,system-ui,sans-serif;font-size:13px;font-weight:800;text-align:center;cursor:help}
+.kn-eng li span{overflow:hidden;text-overflow:ellipsis}
+.kn-eng-lg{grid-column:1/-1;font-family:Inter,system-ui,sans-serif;font-size:10.5px;color:var(--muted);border-top:1px dashed var(--line);padding-top:6px}
+.kn-eng li.off span{color:#B3261E}
+.kn-dot{width:7px;height:7px;border-radius:50%;background:#1F9D57;display:inline-block;justify-self:center}
+.kn-fotos{display:flex;gap:10px;align-items:flex-start;min-height:140px}
+.kn-fotos figure{margin:0;flex:1;min-width:0;text-align:center}
+.kn-fotos img{width:100%;max-height:220px;object-fit:contain;border:1px solid #D0D9E4;border-radius:6px;background:#F7F9FC}
+.kn-fotos figcaption{font-family:Inter,system-ui,sans-serif;font-size:11px;font-weight:700;color:#17375E;margin-top:4px}
+.kn-board__f{background:#0B3C6E;color:#fff;text-align:center;font-weight:700;font-size:12.5px;padding:10px 14px}
+.kn-forms{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
+.kn-span2{grid-column:1/-1}
+.kn-forms>.panel,.kn-grid>.kn-pn{min-width:0}
+@media(max-width:1000px){.kn-forms{grid-template-columns:1fr}}
+.kn-ftbl{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:8px}
+.kn-ftbl th{background:#0B3C6E;color:#fff;text-align:left;padding:7px 8px;font-size:11px;font-weight:700;white-space:nowrap}
+.kn-ftbl td{padding:5px 6px;border-bottom:1px solid var(--line)}
+.kn-ftbl .num{text-align:right;font-weight:800;white-space:nowrap}
+.kn-ftbl input{width:100%;min-width:0}
+.kn-ftbl input.kn-in-unit{width:86px;min-width:86px}
+.kn-ftbl input.kn-in-mw{width:62px;min-width:62px}
+.kn-ftbl input.kn-in-ket{min-width:200px}
+.kn-ftbl select{min-width:118px}
+.kn-ftbl--cards input{max-width:140px}
+.kn-ftbl tr.off td{background:#FFF4F2}
+.kn-f-eng{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,460px),1fr));gap:14px;margin-top:10px}
+@media(max-width:560px){.kn-f-eng{grid-template-columns:1fr}}
+.kn-fe{border:1px solid var(--line);border-radius:10px;padding:10px;overflow:auto;min-width:0}
+.kn-fe__h{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.kn-fe__t{font-weight:800!important;color:var(--navy)!important;width:130px}
+.kn-fe__n{width:150px}
+.kn-fe__c{margin-left:auto;font-size:11px;font-weight:800;color:#1F9D57}
+.kn-ftbl select{padding:6px 4px}
+.kn-x{width:26px;height:26px;border-radius:6px;border:1px solid #F3C9C4;background:#FDECEA;color:#B3261E;font-weight:800;cursor:pointer}
+.kn-add{margin-top:8px;font:inherit;font-size:12px;font-weight:700;color:var(--blue);background:#EEF4FB;border:1px dashed #9DBFE3;border-radius:8px;padding:6px 12px;cursor:pointer}
+.kn-f-daerah{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+@media(max-width:560px){.kn-f-daerah{grid-template-columns:1fr}}
+.kn-f-daerah textarea,.kn-fld textarea,.kn-fld input{width:100%;resize:vertical}
+.kn-fld{margin-top:10px}
+.kn-chk{display:flex;gap:8px;align-items:flex-start;margin-top:10px;font-size:12.5px;color:var(--navy);font-weight:600;cursor:pointer}
+.kn-upload{display:inline-flex;margin-top:10px;cursor:pointer}
+.kn-upload input{position:absolute;opacity:0;width:1px;height:1px}
+.kn-upload span{font-size:12.5px;font-weight:700;color:#fff;background:var(--blue);border-radius:8px;padding:8px 14px}
+.kn-upload input:disabled+span{opacity:.45;cursor:not-allowed}
+.kn-f-foto{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:12px}
+.kn-ff{position:relative;border:1px solid var(--line);border-radius:8px;padding:6px;display:flex;flex-direction:column;gap:6px}
+.kn-ff img{width:100%;height:110px;object-fit:cover;border-radius:5px}
+.kn-ff input{width:100%;font-size:12px!important}
+.kn-ff .kn-x{position:absolute;top:10px;right:10px}
+.kn-foot{margin-top:14px}
 .titleband-act{display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap;justify-content:flex-end}
 </style>
 </head>
@@ -762,6 +866,10 @@ nav.tabbar .tab.tab-sub svg{width:14px;height:14px}
 <button class="side-btn side-edge" id="side-edge" title="Tampilkan menu">☰ MENU</button>
 <nav class="tabbar">
   <div class="side-head"><span>Menu Dashboard</span><button class="side-btn side-close" id="side-close" title="Sembunyikan menu ke kiri">«</button></div>
+  <button class="tab" data-tab="kondisi" title="Progres penormalan kelistrikan Sistem Sorong">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg>
+    Kondisi Sistem UP3
+  </button>
   <button class="tab on" data-tab="gangguan">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 L3 14 h7 l-1 8 10-12 h-7 z"/></svg>
     Gangguan
@@ -988,6 +1096,75 @@ nav.tabbar .tab.tab-sub svg{width:14px;height:14px}
   <div class="mit-grid" id="mitigasi"></div>
 </main>
 </div><!-- /view-gangguan -->
+
+<div id="view-kondisi" class="view">
+  <main>
+    <div class="panel kn-ctl">
+      <div class="kn-ctl__row">
+        <div><label for="kn-tgl">Tanggal update</label><input type="date" id="kn-tgl"></div>
+        <div><label for="kn-jam">Pukul (WIT)</label><input type="time" id="kn-jam"></div>
+        <div class="kn-ctl__now"><button type="button" class="btn-reset" id="kn-now">Isi waktu sekarang</button></div>
+        <div><label for="kn-dmp">DMP beroperasi (MW)</label><input type="text" id="kn-dmp" inputmode="decimal" placeholder="mis. 61,38"><small id="kn-dmp-hint" class="kn-hint"></small></div>
+        <div class="kn-ctl__act">
+          <button type="button" class="side-btn ppt-btn" id="kn-dl">⤓ Unduh PPT</button>
+          <button type="button" class="btn-reset" id="kn-wa">⧉ Salin ringkasan WA</button>
+        </div>
+      </div>
+      <div class="kn-ctl__row2">
+        <span id="kn-save" class="kn-save"></span>
+        <span class="kn-tools">
+          <button type="button" class="kn-link" id="kn-json">⤓ Simpan data (JSON)</button>
+          <label class="kn-link">⤒ Muat data (JSON)<input type="file" id="kn-imp" accept="application/json,.json" hidden></label>
+          <button type="button" class="kn-link kn-link--red" id="kn-reset">↺ Kembalikan data awal</button>
+        </span>
+      </div>
+      <textarea id="kn-wa-box" class="kn-wa-box" rows="6" hidden readonly></textarea>
+    </div>
+
+    <!-- Papan: format slide "Progres Penormalan Kelistrikan Sistem Sorong" -->
+    <section class="kn-board" aria-label="Progres penormalan kelistrikan Sistem Sorong">
+      <header class="kn-board__h"><h2 id="kn-b-title"></h2><div id="kn-b-upd"></div></header>
+      <div class="kn-cards" id="kn-b-cards"></div>
+      <div class="kn-grid">
+        <div class="kn-pn kn-pn--eng"><div class="kn-pn__h">Engine yang Beroperasi</div><div class="kn-engs" id="kn-b-eng"></div></div>
+        <div class="kn-pn kn-pn--daerah"><div class="kn-pn__h">Daerah / Wilayah yang Masih Terdampak</div><div class="kn-pn__b" id="kn-b-daerah"></div></div>
+        <div class="kn-pn kn-pn--notes"><div class="kn-pn__h">Catatan / Perkembangan Penormalan</div><div class="kn-pn__b kn-notes" id="kn-b-notes"></div></div>
+        <div class="kn-pn kn-pn--foto"><div class="kn-pn__h">Dokumentasi Progres dan Perbaikan</div><div class="kn-pn__b kn-fotos" id="kn-b-foto"></div></div>
+      </div>
+      <footer class="kn-board__f" id="kn-b-foot"></footer>
+    </section>
+
+    <div class="section-h"><span class="bar"></span><h2>Perbarui Data Penormalan</h2><span class="hint">Setiap perubahan langsung tampil di papan &amp; tersimpan otomatis di browser ini</span></div>
+    <div class="kn-forms">
+      <div class="panel">
+        <h3>Jumlah Terdampak &amp; Sudah Nyala</h3><div class="ph-sub">Terdampak (masih padam) = jumlah terdampak − sudah nyala · persentase = sudah nyala ÷ jumlah terdampak</div>
+        <div style="overflow:auto"><table class="kn-ftbl kn-ftbl--cards"><thead><tr><th>Kategori</th><th>Jumlah terdampak</th><th>Sudah nyala</th><th class="num">Masih padam</th><th class="num">Pulih</th></tr></thead><tbody id="kn-f-cards"></tbody></table></div>
+      </div>
+      <div class="panel">
+        <h3>Daerah / Wilayah yang Masih Terdampak</h3><div class="ph-sub">Satu baris = satu poin. ULP yang dikosongkan tidak ditampilkan.</div>
+        <div class="kn-f-daerah" id="kn-f-daerah"></div>
+      </div>
+      <div class="panel kn-span2">
+        <h3>Engine / Unit Pembangkit</h3><div class="ph-sub">Status selain <b>Operasi</b> ditandai <b style="color:#E2231A">×</b> di papan &amp; PPT, dan (bila diaktifkan) otomatis masuk catatan bersama keterangan &amp; MW-nya.</div>
+        <div class="kn-f-eng" id="kn-f-eng"></div>
+      </div>
+      <div class="panel">
+        <h3>Catatan / Perkembangan Penormalan</h3>
+        <div class="kn-fld"><label for="kn-pembuka">Catatan pembuka (satu baris = satu poin)</label><textarea id="kn-pembuka" rows="4"></textarea></div>
+        <label class="kn-chk"><input type="checkbox" id="kn-auto"> Susun otomatis: DMP, jumlah unit beroperasi per pembangkit, dan unit yang tidak beroperasi</label>
+        <div class="kn-fld"><label for="kn-penutup">Catatan penutup</label><textarea id="kn-penutup" rows="3"></textarea></div>
+        <div class="kn-fld"><label for="kn-footer">Teks pita bawah</label><input type="text" id="kn-footer"></div>
+        <div class="kn-fld"><label for="kn-judul">Judul</label><input type="text" id="kn-judul"></div>
+      </div>
+      <div class="panel">
+        <h3>Dokumentasi Progres dan Perbaikan</h3><div class="ph-sub">Maksimal 4 foto; foto diperkecil otomatis dan ikut masuk PPT. <b id="kn-foto-info"></b></div>
+        <label class="kn-upload"><input type="file" id="kn-foto-in" accept="image/*" multiple> <span>＋ Tambah foto</span></label>
+        <div class="kn-f-foto" id="kn-f-foto"></div>
+      </div>
+    </div>
+    <div class="ks-foot kn-foot">Data menu ini diisi manual dan tersimpan di browser perangkat yang dipakai. Untuk memindahkan ke perangkat lain, gunakan <b>Simpan data (JSON)</b> lalu <b>Muat data (JSON)</b>. Format PPT: "Progres Penormalan Kelistrikan Sistem Sorong (Editabel v3.1)".</div>
+  </main>
+</div>
 
 <div id="view-fgtmppt" class="view">
   <main>
@@ -1410,8 +1587,9 @@ nav.tabbar .tab.tab-sub svg{width:14px;height:14px}
 <script src="fdx-ppt.js?v=20261103a"></script>
 <script src="row-ppt.js?v=20261119a"></script>
 <script src="wp-ppt.js?v=20261103g"></script>
-<script src="fgtm-ppt.js?v=20261116a"></script>
-<script src="ppt-export.js?v=20261116a"></script>
+<script src="fgtm-ppt.js?v=20261126a"></script>
+<script src="kondisi.js?v=20261126b"></script>
+<script src="ppt-export.js?v=20261126a"></script>
 <script>
 (function(){
   var KEY="fgtm_side_off", b=document.body, narrow=matchMedia("(max-width:900px)");
@@ -1434,6 +1612,7 @@ nav.tabbar .tab.tab-sub svg{width:14px;height:14px}
       ao: {t:"Monitoring AO (Anggaran Operasi) 2026", l:"Pagu SKAO, pengadaan, kontrak, tagihan & pembayaran per kegiatan dan paket pekerjaan \u2014 data langsung dari spreadsheet."},
       fdx: {t:"Monitoring 4DX UP3 Sorong", l:"Target Lead Measure 2026 per ULP \u2014 skala tahunan, bulanan, mingguan, dan harian."},
       susut: {t:"Monitoring Workplan Susut", l:"Target WP UIW 2026 & realisasi kegiatan penurunan susut teknis UP3 Sorong \u2014 sheet WP UIW Target 2026 & SOR."},
+      kondisi: {t:"Kondisi Sistem UP3 Sorong", l:"Progres penormalan kelistrikan Sistem Sorong \u2014 jumlah terdampak & sudah nyala, engine yang beroperasi, daerah terdampak, catatan, dan dokumentasi perbaikan."},
       fgtmppt: {t:"Download PPT Evaluasi Gangguan JTM (FGTM)", l:"Paparan mingguan evaluasi gangguan JTM UP3 Sorong \u2014 diisi otomatis dari data gangguan & ROW pada dashboard."},
       workplan: {t:"Monitoring Realisasi Workplan", l:"Realisasi pekerjaan workplan 2026 terhadap target lead measure tiap ULP \u2014 per bulan, kelompok pekerjaan, dan mitra pelaksana."}
     };
@@ -1453,6 +1632,7 @@ nav.tabbar .tab.tab-sub svg{width:14px;height:14px}
       if(name==="fdx" && window.FDX){ window.FDX.init(); if(window.WIG) window.WIG.init(); }
       if(name==="workplan" && window.Workplan){ window.Workplan.init(); }
       if(name==="fgtmppt" && window.FGTMPPT){ window.FGTMPPT.initView(); }
+      if(name==="kondisi" && window.KondisiSistem){ window.KondisiSistem.init(); }
       if(name==="susut" && window.Susut){ window.Susut.init(); }
       window.scrollTo(0,0);
     }
