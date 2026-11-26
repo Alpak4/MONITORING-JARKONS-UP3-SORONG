@@ -1,5 +1,5 @@
 /* Menu "Kondisi Sistem UP3 Sorong" — Progres Penormalan Kelistrikan Sistem Sorong.
-   Format: "Progress_Penormalan_Kelistrikan_Sorong_Editabel_v3_1.pptx" (1 slide).
+   Format PPT: "Progres_Penormalan_Kelistrikan_Sistem_Sorong_-_26-11-2026_1649_WIT.pptx" (1 slide, tema gelap).
    Data diisi/diedit di menu ini, tersimpan di browser (localStorage), dapat diekspor/impor JSON,
    disalin sebagai ringkasan WhatsApp, dan diunduh sebagai PPT format yang sama (template: js/kondisi-template.js). */
 (function(){
@@ -171,64 +171,67 @@
   }
   function alertBox(t){ var s=$("kn-save"); s.textContent=t; s.className="kn-save kn-save--err"; }
 
-  /* ---------- PPT ---------- */
-  var FONT='<a:latin typeface="Times New Roman" panose="02020603050405020304" pitchFamily="18" charset="0"/><a:cs typeface="Times New Roman" panose="02020603050405020304" pitchFamily="18" charset="0"/>';
-  var C75='<a:solidFill><a:schemeClr val="tx2"><a:lumMod val="75000"/></a:schemeClr></a:solidFill>', CTX='<a:solidFill><a:schemeClr val="tx2"/></a:solidFill>', CRED='<a:solidFill><a:srgbClr val="FF0000"/></a:solidFill>';
-  var BUL='<a:buFont typeface="Arial" panose="020B0604020202020204" pitchFamily="34" charset="0"/><a:buChar char="•"/>';
+  /* ---------- PPT (template tema gelap, format 26-11-2026 16:49 WIT) ---------- */
+  var FONT='<a:latin typeface="Times New Roman" pitchFamily="34" charset="0"/><a:ea typeface="Times New Roman" pitchFamily="34" charset="-122"/><a:cs typeface="Times New Roman" pitchFamily="34" charset="-120"/>';
+  var FSYM='<a:latin typeface="Segoe UI Symbol" pitchFamily="34" charset="0"/><a:ea typeface="Segoe UI Symbol" pitchFamily="34" charset="-122"/><a:cs typeface="Segoe UI Symbol" pitchFamily="34" charset="-120"/>';
+  var WHITE="F2F6FA", GREEN="6EE36A", ORANGE="FFAA33", AMBER="FFC233";
   var PPR=/<a:pPr\b[^>]*\/>|<a:pPr\b[^>]*>[\s\S]*?<\/a:pPr>/, RPR=/<a:rPr\b[^>]*\/>|<a:rPr\b[^>]*>[\s\S]*?<\/a:rPr>/;
-  function run(t, sz, fill, b){ return '<a:r><a:rPr lang="id-ID" sz="'+sz+'"'+(b?' b="1"':'')+' dirty="0">'+fill+FONT+'</a:rPr><a:t>'+esc(t)+'</a:t></a:r>'; }
-  function para(runs, bullet, algn){ return '<a:p>'+(bullet?'<a:pPr marL="171450" indent="-171450"'+(algn?' algn="'+algn+'"':'')+'>'+BUL+'</a:pPr>':'')+runs+'</a:p>'; }
-  function emptyP(sz){ return '<a:p><a:endParaRPr lang="id-ID" sz="'+sz+'" dirty="0"/></a:p>'; }
+  function run(t, sz, color, b, font){ return '<a:r><a:rPr lang="id-ID" sz="'+sz+'"'+(b?' b="1"':'')+' dirty="0"><a:solidFill><a:srgbClr val="'+color+'"/></a:solidFill>'+(font||FONT)+'</a:rPr><a:t>'+esc(t)+'</a:t></a:r>'; }
+  function endP(sz){ return '<a:endParaRPr lang="id-ID" sz="'+sz+'" dirty="0"/>'; }
   function setBody(sp, paras){ var a=sp.indexOf("<a:p>"), b=sp.lastIndexOf("</p:txBody>"); if(a<0||b<0) return sp; return sp.slice(0,a)+paras+sp.slice(b); }
   function setText(sp, text){
     var a=sp.indexOf("<a:p>"); if(a<0) return sp; var p=sp.slice(a, sp.indexOf("</a:p>",a)+6), pPr=(p.match(PPR)||[""])[0], rPr=(p.match(RPR)||['<a:rPr lang="id-ID" dirty="0"/>'])[0];
     return setBody(sp, '<a:p>'+pPr+'<a:r>'+rPr+'<a:t>'+esc(text)+'</a:t></a:r></a:p>');
   }
-  function fitSz(lineArr, chars, maxLines){ var n=lineArr.reduce(function(s,t){ return s+Math.max(1,Math.ceil(String(t).length/chars)); },0); return n<=maxLines?1000:(n<=maxLines*1.15?900:(n<=maxLines*1.35?800:700)); }
-  function engBody(e){
-    var sz=e.units.length>12?(e.units.length>15?800:900):1000;
-    return para(run(e.judul,sz,C75,true).replace(' b="1"',' b="1" u="sng"'))+emptyP(sz)+e.units.map(function(u){ var mw=mwTxt(u.mw);
-      return para(run(u.n+" :  "+(mw?mw+" ":"      ")+"MW"+(u.s==="O"?"":" "),sz,C75)+(u.s==="O"?"":run("×",sz,CRED)),true); }).join("");
-  }
+  function fitSz(lineArr, chars, maxLines, base){ var n=lineArr.reduce(function(s,t){ return s+Math.max(1,Math.ceil(String(t).length/chars)); },0), k=n<=maxLines?1:(n<=maxLines*1.15?0.9:(n<=maxLines*1.35?0.8:0.7)); return Math.round(base*k/50)*50; }
+  // daftar mesin: kotak nama unit (bullet) + kotak nilai MW (rata dengan baris nama)
+  var LNSP='<a:lnSpc><a:spcPts val="1238"/></a:lnSpc>';
+  function engNames(e){ return e.units.map(function(u){ return '<a:p><a:pPr marL="139700" indent="-139700">'+LNSP+'<a:buSzPct val="100000"/><a:buChar char="•"/></a:pPr>'+run(u.n+" :",600,u.s==="O"?WHITE:ORANGE)+endP(600)+'</a:p>'; }).join(""); }
+  function engVals(e){ return e.units.map(function(u){ var mw=mwTxt(u.mw);
+    return '<a:p><a:pPr marL="0" indent="0">'+LNSP+'<a:buNone/></a:pPr>'+(u.s==="O" ? run((mw?mw+" ":"")+"MW",600,GREEN) : run((mw?mw+" ":"")+"MW",600,ORANGE)+run(" ",600,AMBER,false,FSYM)+run("!",600,AMBER,true,FSYM))+endP(600)+'</a:p>'; }).join(""); }
   function daerahBody(){
-    var dl=daerahList(); if(!dl.length) return para(run("Tidak ada daerah yang masih terdampak.",1000,C75));
-    var all=[]; dl.forEach(function(d){ all.push("ULP "+d.u); d.it.forEach(function(t){ all.push(t); }); all.push(""); });
-    var sz=fitSz(all,62,13);
-    return dl.map(function(d,i){ return para(run("ULP "+d.u+" : ",sz,C75,true))+d.it.map(function(t){ return para(run(t,sz,C75),true); }).join("")+(i<dl.length-1?emptyP(sz):""); }).join("");
+    var dl=daerahList(); if(!dl.length) return '<a:p><a:pPr marL="0" indent="0"><a:buNone/></a:pPr>'+run("Tidak ada daerah yang masih terdampak.",1000,WHITE)+'</a:p>';
+    var all=[]; dl.forEach(function(d){ all.push("ULP "+d.u); d.it.forEach(function(t){ all.push(t); }); }); var sz=fitSz(all,58,12,1000), aft='<a:spcAft><a:spcPts val="200"/></a:spcAft>';
+    return dl.map(function(d,i){ return '<a:p><a:pPr marL="0" indent="0">'+(i?'<a:spcBef><a:spcPts val="600"/></a:spcBef>':'')+aft+'<a:buNone/></a:pPr>'+run("ULP "+d.u+" :",sz,WHITE,true)+endP(sz)+'</a:p>'+
+      d.it.map(function(t){ return '<a:p><a:pPr marL="139700" indent="-139700">'+aft+'<a:buSzPct val="100000"/><a:buChar char="•"/></a:pPr>'+run(t,sz,WHITE)+endP(sz)+'</a:p>'; }).join(""); }).join("");
   }
-  function notesBody(){ var n=notes(), sz=fitSz(n,92,12); return n.map(function(t){ return para(run(t,sz,CTX),true,"just"); }).join(""); }
+  function notesBody(){ var n=notes(), sz=fitSz(n,118,15,800);
+    return n.map(function(t){ return '<a:p><a:pPr marL="152400" indent="-152400" algn="just"><a:spcAft><a:spcPts val="100"/></a:spcAft><a:buSzPct val="100000"/><a:buChar char="•"/></a:pPr>'+run(t,sz,WHITE)+endP(sz)+'</a:p>'; }).join(""); }
+  function totalBody(){ var v=mwTxt(S.dmp); return '<a:p>'+run("TOTAL DAYA MAMPU :   ",800,WHITE,true)+run((v?v+" ":"")+"MW",800,GREEN)+endP(800)+'</a:p><a:p><a:pPr marL="0" indent="0"><a:buNone/></a:pPr>'+endP(700)+'</a:p>'; }
   function loadTpl(){
     if(window.KONDISI_TPL) return Promise.resolve();
-    return new Promise(function(res, rej){ var s=document.createElement("script"); s.src=TEMPLATE+"?v=20261126b";
+    return new Promise(function(res, rej){ var s=document.createElement("script"); s.src=TEMPLATE+"?v=20261126d";
       s.onload=function(){ window.KONDISI_TPL?res():rej(new Error("Template PPT penormalan kosong")); }; s.onerror=function(){ rej(new Error("Template PPT penormalan tidak ditemukan ("+TEMPLATE+")")); }; document.head.appendChild(s); });
   }
   function b64bytes(d){ var b=atob(d.split(",")[1]), u=new Uint8Array(b.length); for(var i=0;i<b.length;i++) u[i]=b.charCodeAt(i); return u; }
-  var BIG={0:10, 1:19, 2:24, 3:29, 4:34, 5:39};          // indeks <p:sp> angka besar per kartu (ULP, Penyulang, Beban, Captive, Trafo, Pelanggan)
-  var SUB={0:[13,14], 1:[57,58], 2:[61,62], 3:[65,66], 4:[73,74], 5:[69,70]}; // [masih padam, sudah nyala]
-  var PCT={0:54, 1:75, 2:76, 3:77, 4:78, 5:79};
-  var ENG={mpp:85, sewatama:86, klasaman:87, klademak:88, maxpower:89};
+  // indeks <p:sp> pada slide template (urutan dokumen)
+  var BIG=[6,17,28,39,50,61], PADAM=[10,21,32,43,54,65], PCTI=[11,22,33,44,55,66], NYALA=[12,23,34,45,56,67];   // ULP, Penyulang, Beban, Captive, Trafo, Pelanggan
+  var ENG={mpp:[72,73], sewatama:[75,76], maxpower:[78,79], klasaman:[81,82], klademak:[84,85]}, ENG_T={mpp:71, sewatama:74, maxpower:77, klasaman:80, klademak:83};
+  var FOTO_LBL=[106,116,126,136], FOTO_X=[3291840,5474208,7656576,9838944], FOTO_Y=5340096, FOTO_W=2018081, FOTO_H=813816, FOTO_ICON=["Image 15","Image 16","Image 17","Image 18"];
   async function build(JSZip, say){
     say=say||function(){};
     say("Memuat template PPT…"); await loadTpl();
     var zip=await JSZip.loadAsync(window.KONDISI_TPL,{base64:true}), path="ppt/slides/slide1.xml", x=await zip.file(path).async("string");
-    var map={3:function(sp){ return setText(sp,S.judul); }, 4:function(sp){ return setText(sp,"INFORMASI PEMULIHAN BERTAHAP  •  UPDATE: "+tglTxt(" / ")+"  |  "+S.jam+" WIT"); },
-      40:function(sp){ return setBody(sp,daerahBody()); }, 48:function(sp){ return setBody(sp,notesBody()); }, 53:function(sp){ return setText(sp,S.footer); }};
-    S.cards.forEach(function(c,i){ map[BIG[i]]=function(sp){ return setText(sp,nf(num(c.j))); }; map[SUB[i][0]]=function(sp){ return setText(sp,nf(padam(c))); };
-      map[SUB[i][1]]=function(sp){ return setText(sp,nf(num(c.n))); }; map[PCT[i]]=function(sp){ return setText(sp,pct(c)+" %"); }; });
-    S.eng.forEach(function(e){ if(ENG[e.id]!=null) map[ENG[e.id]]=function(sp){ return setBody(sp,engBody(e)); }; });
+    var map={0:function(sp){ return setText(sp,S.judul); }, 1:function(sp){ return setText(sp,"INFORMASI PEMULIHAN BERTAHAP  •  UPDATE: "+tglTxt(" / ")+"  |  "+S.jam+" WIT"); },
+      89:function(sp){ return setBody(sp,daerahBody()); }, 93:function(sp){ return setBody(sp,notesBody()); }, 137:function(sp){ return setText(sp,S.footer); }, 138:function(sp){ return setBody(sp,totalBody()); }};
+    S.cards.forEach(function(c,i){ if(i>5) return; map[BIG[i]]=function(sp){ return setText(sp,nf(num(c.j))); }; map[PADAM[i]]=function(sp){ return setText(sp,nf(padam(c))); };
+      map[PCTI[i]]=function(sp){ return setText(sp,pct(c)+" %"); }; map[NYALA[i]]=function(sp){ return setText(sp,nf(num(c.n))); }; });
+    S.eng.forEach(function(e){ var ix=ENG[e.id]; if(!ix) return; map[ix[0]]=function(sp){ return setBody(sp,engNames(e)); }; map[ix[1]]=function(sp){ return setBody(sp,engVals(e)); }; map[ENG_T[e.id]]=function(sp){ return setText(sp,e.judul); }; });
+    var fotos=S.foto.slice(0,4);
+    fotos.forEach(function(f,i){ map[FOTO_LBL[i]]=function(sp){ return setText(sp,""); }; });
     var k=0; x=x.replace(/<p:sp>[\s\S]*?<\/p:sp>/g, function(sp){ var i=k++; return map[i]?map[i](sp):sp; });
-    if(S.foto.length){
+    if(fotos.length){
       say("Menyisipkan foto dokumentasi…");
-      var rels=await zip.file("ppt/slides/_rels/slide1.xml.rels").async("string"), pics="";
-      var X0=3188098+70000, Y0=4598343+224029+60000, W=8839495-140000, H=4642738+1639190-60000-Y0, n=S.foto.length, gap=90000, hasCap=S.foto.some(function(f){return String(f.cap||"").trim();});
-      var sw=(W-gap*(n-1))/n, ih=H-(hasCap?190000:0);
-      S.foto.forEach(function(f,i){
+      fotos.forEach(function(f,i){ x=x.replace(new RegExp('<p:pic>(?:(?!<p:pic>)[\\s\\S])*?name="'+FOTO_ICON[i]+'"[\\s\\S]*?<\\/p:pic>'), ""); }); // ikon kamera diganti foto
+      var rels=await zip.file("ppt/slides/_rels/slide1.xml.rels").async("string"), pics="", IN=45720;
+      fotos.forEach(function(f,i){
         var fn="kondisi_foto"+(i+1)+".jpeg", rid="rIdKF"+(i+1); zip.file("ppt/media/"+fn, b64bytes(f.src));
         rels=rels.replace("</Relationships>",'<Relationship Id="'+rid+'" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="../media/'+fn+'"/></Relationships>');
-        var ar=(f.w&&f.h)?f.w/f.h:4/3, w=sw, h=w/ar; if(h>ih){ h=ih; w=h*ar; }
-        var sx=X0+i*(sw+gap), px=sx+(sw-w)/2, py=Y0+(ih-h)/2;
-        pics+='<p:pic><p:nvPicPr><p:cNvPr id="'+(9001+i*2)+'" name="Foto Dokumentasi '+(i+1)+'"/><p:cNvPicPr><a:picLocks noChangeAspect="1"/></p:cNvPicPr><p:nvPr/></p:nvPicPr><p:blipFill><a:blip r:embed="'+rid+'"/><a:stretch><a:fillRect/></a:stretch></p:blipFill><p:spPr><a:xfrm><a:off x="'+Math.round(px)+'" y="'+Math.round(py)+'"/><a:ext cx="'+Math.round(w)+'" cy="'+Math.round(h)+'"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:ln w="9525"><a:solidFill><a:srgbClr val="D0D9E4"/></a:solidFill></a:ln></p:spPr></p:pic>';
-        if(String(f.cap||"").trim()) pics+='<p:sp><p:nvSpPr><p:cNvPr id="'+(9002+i*2)+'" name="Keterangan Foto '+(i+1)+'"/><p:cNvSpPr txBox="1"/><p:nvPr/></p:nvSpPr><p:spPr><a:xfrm><a:off x="'+Math.round(sx)+'" y="'+Math.round(Y0+ih+25000)+'"/><a:ext cx="'+Math.round(sw)+'" cy="160000"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:noFill/></p:spPr><p:txBody><a:bodyPr wrap="square" lIns="0" tIns="0" rIns="0" bIns="0" anchor="t"><a:normAutofit/></a:bodyPr><a:lstStyle/><a:p><a:pPr algn="ctr"/>'+run(String(f.cap).trim(),800,C75,true)+'</a:p></p:txBody></p:sp>';
+        var bx=FOTO_X[i]+IN, by=FOTO_Y+IN, bw=FOTO_W-2*IN, bh=FOTO_H-2*IN, ar=(f.w&&f.h)?f.w/f.h:4/3, br=bw/bh, crop="";
+        if(ar>br){ var cl=Math.round((1-br/ar)/2*100000); crop='<a:srcRect l="'+cl+'" r="'+cl+'"/>'; } else if(ar<br){ var ct=Math.round((1-ar/br)/2*100000); crop='<a:srcRect t="'+ct+'" b="'+ct+'"/>'; }
+        pics+='<p:pic><p:nvPicPr><p:cNvPr id="'+(9001+i*2)+'" name="Foto Dokumentasi '+(i+1)+'"/><p:cNvPicPr><a:picLocks noChangeAspect="1"/></p:cNvPicPr><p:nvPr/></p:nvPicPr><p:blipFill><a:blip r:embed="'+rid+'"/>'+crop+'<a:stretch><a:fillRect/></a:stretch></p:blipFill><p:spPr><a:xfrm><a:off x="'+bx+'" y="'+by+'"/><a:ext cx="'+bw+'" cy="'+bh+'"/></a:xfrm><a:prstGeom prst="roundRect"><a:avLst><a:gd name="adj" fmla="val 4000"/></a:avLst></a:prstGeom></p:spPr></p:pic>';
+        var cap=String(f.cap||"").trim();
+        if(cap) pics+='<p:sp><p:nvSpPr><p:cNvPr id="'+(9002+i*2)+'" name="Keterangan Foto '+(i+1)+'"/><p:cNvSpPr txBox="1"/><p:nvPr/></p:nvSpPr><p:spPr><a:xfrm><a:off x="'+bx+'" y="'+(by+bh-190000)+'"/><a:ext cx="'+bw+'" cy="190000"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:solidFill><a:srgbClr val="061A33"><a:alpha val="72000"/></a:srgbClr></a:solidFill></p:spPr><p:txBody><a:bodyPr wrap="square" lIns="45720" tIns="0" rIns="45720" bIns="0" anchor="ctr"><a:normAutofit/></a:bodyPr><a:lstStyle/><a:p><a:pPr algn="ctr"/>'+run(cap,800,WHITE,true)+'</a:p></p:txBody></p:sp>';
       });
       x=x.replace("</p:spTree>", pics+"</p:spTree>");
       zip.file("ppt/slides/_rels/slide1.xml.rels", rels);

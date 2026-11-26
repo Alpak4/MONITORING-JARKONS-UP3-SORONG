@@ -1,5 +1,11 @@
 # Paket Update GitHub — Dashboard Gangguan PLN UP3 Sorong
-Tanggal: 26 November 2026 · Versi cache terbaru: ?v=20261126c
+Tanggal: 26 November 2026 · Versi cache terbaru: ?v=20261126d
+
+## Pembaruan 26 November 2026 (rev. e) — Format PPT baru menu Kondisi Sistem UP3
+- **⤓ Unduh PPT** (dan PPT pada backup per jam) kini memakai format "Progres Penormalan Kelistrikan Sistem Sorong - 26-11-2026 1649 WIT"
+  (tema gelap, ikon per kartu, MW hijau untuk unit beroperasi, oranye + "!" untuk unit tidak beroperasi, baris TOTAL DAYA MAMPU = DMP,
+  4 bingkai foto dokumentasi — foto otomatis dipotong pas bingkai dengan keterangan di bagian bawah).
+- File berubah: index.html, kondisi.js, kondisi-template.js.
 
 ## Pembaruan 26 November 2026 (rev. d) — **Backup Data per Jam** di menu Kondisi Sistem UP3
 - Backup otomatis tiap jam (selama dashboard terbuka, menu apa pun) dan setiap kali data penormalan diubah; isi slot jam = data terakhir pada jam itu.
