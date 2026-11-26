@@ -1,5 +1,16 @@
 # Paket Update GitHub — Dashboard Gangguan PLN UP3 Sorong
-Tanggal: 26 November 2026 · Versi cache terbaru: ?v=20261126b
+Tanggal: 26 November 2026 · Versi cache terbaru: ?v=20261126c
+
+## Pembaruan 26 November 2026 (rev. d) — **Backup Data per Jam** di menu Kondisi Sistem UP3
+- Backup otomatis tiap jam (selama dashboard terbuka, menu apa pun) dan setiap kali data penormalan diubah; isi slot jam = data terakhir pada jam itu.
+  Disimpan di browser (IndexedDB), retensi 30 hari; foto disimpan sekali walau dipakai di banyak jam.
+- Pilih **Dari jam – Sampai jam** → **⤓ Unduh backup (ZIP)**: Rekap per jam.csv (Excel), JSON tiap jam, dan (opsional) PPT tiap jam.
+- Daftar backup per tanggal: tiap jam bisa diunduh **PPT** / **JSON** atau **Pulihkan** (dengan tombol Batalkan pemulihan).
+- File berubah: index.html, kondisi.js, ppt-export.js.
+
+## Pembaruan 26 November 2026 (rev. c) — Menu **PPT Evaluasi FGTM** berdiri sendiri
+- PPT Evaluasi FGTM kini menu utama di menu samping (sebelumnya sub menu di bawah Gangguan), dengan ikon presentasi. Isi & fungsi tidak berubah.
+- File berubah: index.html.
 
 ## Pembaruan 26 November 2026 (rev. b) — Menu **Kondisi Sistem UP3** = Progres Penormalan Kelistrikan Sistem Sorong
 - Isi menu diganti (data evaluasi FGTM sebelumnya dihapus dari menu ini) menjadi papan **Progres Penormalan Kelistrikan Sistem Sorong**
@@ -20,7 +31,7 @@ Tanggal: 26 November 2026 · Versi cache terbaru: ?v=20261126b
 - File berubah: index.html, rabas.js, aset_jaringan.js, row-ppt.js.
 
 ## Pembaruan 16 November 2026 — Sub menu **PPT Evaluasi FGTM**
-- Menu samping **Gangguan → PPT Evaluasi FGTM**: pilih Bulan, Minggu (M1 = tgl 1–7 · M2 = 8–14 · M3 = 15–21 · M4 = 22–akhir),
+- Menu samping **PPT Evaluasi FGTM**: pilih Bulan, Minggu (M1 = tgl 1–7 · M2 = 8–14 · M3 = 15–21 · M4 = 22–akhir),
   tanggal data, target FGTM s.d. periode, tanggal paparan, serta slide opsional; pratinjau angka utama & susunan slide.
 - **⤓ Download PPT Evaluasi FGTM** (format "Evaluasi FGTM M1 November – UP3 Sorong Rev 1", 23 slide + halaman detail otomatis):
   - Dari data gangguan: cover, overview (realisasi vs target, ULP terbesar, tren mingguan, 5 keypoint teratas), realisasi
@@ -91,9 +102,10 @@ File lain di repo (ppt-template.pptx, rabas.js, aset_jaringan.js, dll.) TIDAK pe
 4. Tunggu ±1–2 menit hingga GitHub Pages selesai deploy, lalu buka situs dengan **Ctrl+F5**.
 
 ## Uji setelah deploy
+- Menu **Kondisi Sistem UP3** → Backup Data per Jam → pilih rentang jam → **⤓ Unduh backup (ZIP)**.
 - Menu **Kondisi Sistem UP3** → ubah angka/status unit → papan berubah → **⤓ Unduh PPT** → file "Progres Penormalan Kelistrikan Sistem Sorong - <tgl> <jam> WIT.pptx".
 - Menu **ROW** → pilih **Mitra** dan/atau **Tanggal** → angka KPI, grafik, matriks & rekap mitra berubah sesuai filter → **Reset** mengembalikan semua.
-- Menu **Gangguan → PPT Evaluasi FGTM** → pilih Bulan & Minggu → **⤓ Download PPT Evaluasi FGTM** → file "Evaluasi FGTM M<minggu> <Bulan> 2026 - UP3 Sorong.pptx".
+- Menu **PPT Evaluasi FGTM** → pilih Bulan & Minggu → **⤓ Download PPT Evaluasi FGTM** → file "Evaluasi FGTM M<minggu> <Bulan> 2026 - UP3 Sorong.pptx".
 - Menu **Realisasi Workplan** → (opsional) pilih Bulan → **⤓ Unduh PPT** → file "Paparan Realisasi Workplan UP3 Sorong s.d <Bulan> 2026.pptx".
 - Menu **Monitoring AO** → **⤓ Unduh PPT** → file "AO_M<minggu>_<Bulan>_2026.pptx".
 - Menu **Monitoring 4DX** → pilih Bulan → **⤓ Unduh PPT** → file "Monitoring 4DX - WIG & Workplan HAR UP3 Sorong s.d <Bulan> 2026.pptx".

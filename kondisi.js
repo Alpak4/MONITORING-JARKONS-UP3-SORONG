@@ -55,7 +55,7 @@
   function jamDot(){ return String(S.jam||"").replace(":","."); }
   function tglTxt(sep){ var m=String(S.tgl||"").match(/^(\d{4})-(\d{2})-(\d{2})$/); return m ? m[3]+sep+m[2]+sep+m[1] : ""; }
   function code(u){ var m=String(u.n).match(/^unit\s*(\d+)$/i); if(m) return "#"+m[1]; m=String(u.n).match(/^([A-Za-z]+)\s*(\d+)$/); return m ? m[1]+" #"+m[2] : u.n; }
-  function save(){ try{ localStorage.setItem(LSKEY, JSON.stringify(S)); $("kn-save").textContent="Tersimpan di browser ini · "+new Date().toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"}); $("kn-save").className="kn-save"; }
+  function save(){ try{ localStorage.setItem(LSKEY, JSON.stringify(S)); $("kn-save").textContent="Tersimpan di browser ini · "+new Date().toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"}); $("kn-save").className="kn-save"; scheduleBackup(); }
     catch(e){ $("kn-save").textContent="Gagal menyimpan (memori browser penuh) — kurangi/hapus foto."; $("kn-save").className="kn-save kn-save--err"; } }
   function load(){ try{ var o=JSON.parse(localStorage.getItem(LSKEY)); if(o && o.v===1 && o.cards && o.eng) return o; }catch(e){} return defaults(); }
 
@@ -244,6 +244,136 @@
     setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 1500);
   }
 
+  /* ---------- backup per jam (IndexedDB browser ini) ----------
+     Slot = tanggal + jam lokal (mis. 2026-11-26 13:00–13:59). Isi slot = data terakhir pada jam tersebut.
+     Dibuat saat data disimpan, dan tiap pergantian jam selama dashboard terbuka. Foto disimpan sekali (dedup). */
+  var BK_DB="kondisi_backup_v1", BK_DAYS=30, bkTimer=null, bkDeb=null, bkSel=null;
+  function idb(){ return new Promise(function(res, rej){ if(!window.indexedDB) return rej(new Error("Browser tidak mendukung IndexedDB"));
+    var r=indexedDB.open(BK_DB,1); r.onupgradeneeded=function(){ var d=r.result; if(!d.objectStoreNames.contains("snap")) d.createObjectStore("snap",{keyPath:"slot"}); if(!d.objectStoreNames.contains("foto")) d.createObjectStore("foto",{keyPath:"id"}); };
+    r.onsuccess=function(){ res(r.result); }; r.onerror=function(){ rej(r.error); }; }); }
+  function tx(db, stores, mode, fn){ return new Promise(function(res, rej){ var t=db.transaction(stores,mode), out; out=fn(t); t.oncomplete=function(){ res(out&&out.result!==undefined?out.result:out); }; t.onerror=function(){ rej(t.error); }; t.onabort=function(){ rej(t.error); }; }); }
+  function reqP(q){ return new Promise(function(res, rej){ q.onsuccess=function(){ res(q.result); }; q.onerror=function(){ rej(q.error); }; }); }
+  function hashStr(s){ var h1=5381, h2=52711; for(var i=0;i<s.length;i++){ var c=s.charCodeAt(i); h1=(h1*33)^c; h2=(h2*31)^c; } return "f"+(h1>>>0).toString(36)+(h2>>>0).toString(36)+s.length.toString(36); }
+  function p2(n){ return String(n).padStart(2,"0"); }
+  function slotOf(d){ return d.getFullYear()+"-"+p2(d.getMonth()+1)+"-"+p2(d.getDate())+"T"+p2(d.getHours()); }
+  function slotLabel(sl){ var m=sl.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2})$/); return m ? m[3]+"/"+m[2]+"/"+m[1]+" "+m[4]+":00–"+m[4]+":59" : sl; }
+  function summary(st){
+    var c=function(k){ return st.cards.filter(function(x){return x.k===k;})[0]||{j:0,n:0}; }, pc=function(x){ var j=num(x.j); return j>0?Math.min(100,Math.round(num(x.n)/j*100)):0; };
+    var off=[], op=0, tot=0; st.eng.forEach(function(e){ e.units.forEach(function(u){ tot++; if(u.s==="O") op++; else off.push(e.nama+" "+code(u)); }); });
+    return {upd:st.tgl+" "+st.jam, plg:[num(c("plg").j),num(c("plg").n),pc(c("plg"))], pny:[num(c("pny").j),num(c("pny").n),pc(c("pny"))], beban:[num(c("beban").j),num(c("beban").n),pc(c("beban"))], dmp:st.dmp, op:op, tot:tot, off:off};
+  }
+  async function backupNow(st, force){
+    st=st||S; if(!st) return null;
+    var db=await idb(), slot=slotOf(new Date()), data=JSON.parse(JSON.stringify(st)), fotos=[];
+    data.foto=(st.foto||[]).map(function(f){ var id=hashStr(f.src); fotos.push({id:id, src:f.src}); return {id:id, w:f.w, h:f.h, cap:f.cap}; });
+    await tx(db,["snap","foto"],"readwrite",function(t){ var fs=t.objectStore("foto"); fotos.forEach(function(f){ fs.put(f); });
+      t.objectStore("snap").put({slot:slot, savedAt:new Date().toISOString(), data:data, sum:summary(st)}); });
+    db.close(); return slot;
+  }
+  async function listSnaps(){ var db=await idb(); var all=await tx(db,["snap"],"readonly",function(t){ return t.objectStore("snap").getAll(); }); db.close(); return (all||[]).sort(function(a,b){ return a.slot<b.slot?1:-1; }); }
+  async function getSnap(slot){
+    var db=await idb(), rec=await tx(db,["snap"],"readonly",function(t){ return t.objectStore("snap").get(slot); }); if(!rec){ db.close(); return null; }
+    var st=JSON.parse(JSON.stringify(rec.data));
+    st.foto=await Promise.all((st.foto||[]).map(function(f){ return tx(db,["foto"],"readonly",function(t){ return t.objectStore("foto").get(f.id); }).then(function(p){ return p?{src:p.src, w:f.w, h:f.h, cap:f.cap}:null; }); }));
+    st.foto=st.foto.filter(Boolean); db.close(); return {rec:rec, st:st};
+  }
+  async function pruneSnaps(){
+    var lim=slotOf(new Date(Date.now()-BK_DAYS*864e5)), db=await idb(), all=await tx(db,["snap"],"readonly",function(t){ return t.objectStore("snap").getAll(); }), used={};
+    var old=all.filter(function(r){ return r.slot<lim; }); all.filter(function(r){ return r.slot>=lim; }).forEach(function(r){ (r.data.foto||[]).forEach(function(f){ used[f.id]=1; }); });
+    var fk=await tx(db,["foto"],"readonly",function(t){ return t.objectStore("foto").getAllKeys(); });
+    await tx(db,["snap","foto"],"readwrite",function(t){ old.forEach(function(r){ t.objectStore("snap").delete(r.slot); }); (fk||[]).forEach(function(k){ if(!used[k]) t.objectStore("foto").delete(k); }); });
+    db.close();
+  }
+  function scheduleBackup(){ clearTimeout(bkDeb); bkDeb=setTimeout(function(){ backupNow().then(function(){ if(inited) renderBackup(); }).catch(function(){}); }, 2500); }
+  async function hourlyTick(){
+    try{
+      if(!S){ var raw=localStorage.getItem(LSKEY); if(!raw) return; var o=JSON.parse(raw); if(!o||o.v!==1) return; S=o; }
+      var slot=slotOf(new Date()), db=await idb(), has=await tx(db,["snap"],"readonly",function(t){ return t.objectStore("snap").getKey(slot); }); db.close();
+      if(has===undefined){ await backupNow(); await pruneSnaps(); if(inited) renderBackup(); }
+    }catch(e){}
+  }
+  function startHourly(){ if(bkTimer) return; hourlyTick(); bkTimer=setInterval(hourlyTick, 60000); }
+  function dl(blob, name){ var a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click(); setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); },1500); }
+  function slotFile(sl){ return sl.replace("T"," ")+"00"; }
+  var CSV_COLS=["Slot backup","Disimpan","Update data"].concat([].concat.apply([],["ULP","Penyulang","Beban (kW)","Beban Captive (kW)","Trafo (unit)","Pelanggan"].map(function(l){ return [l+" - jumlah terdampak", l+" - masih padam", l+" - sudah nyala", l+" - % pulih"]; }))).concat(["DMP (MW)","Unit beroperasi","Total unit","Unit tidak beroperasi","Daerah masih terdampak"]);
+  function csvRow(rec){
+    var d=rec.data, q=function(v){ v=String(v==null?"":v); return /[;"\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; };
+    var cells=[slotLabel(rec.slot), new Date(rec.savedAt).toLocaleString("id-ID"), d.tgl+" "+d.jam];
+    d.cards.forEach(function(c){ var j=num(c.j), n=num(c.n); cells.push(j, Math.max(0,j-n), n, j>0?Math.min(100,Math.round(n/j*100)):0); });
+    cells.push(String(d.dmp||""), rec.sum.op, rec.sum.tot, rec.sum.off.join(", "), ULPS.map(function(u){ var it=lines((d.daerah||{})[u]); return it.length?"ULP "+u+": "+it.join(" / "):""; }).filter(Boolean).join(" | "));
+    return cells.map(q).join(";");
+  }
+  async function withState(st, fn){ var prev=S; S=st; try{ return await fn(); } finally{ S=prev; } }
+  async function dlSnap(slot, kind){
+    var ov=(window.PPTExport&&window.PPTExport.overlay)||function(){};
+    try{
+      ov("Mengambil backup "+slotLabel(slot)+"…"); var g=await getSnap(slot); if(!g) throw new Error("Backup tidak ditemukan");
+      if(kind==="json"){ dl(new Blob([JSON.stringify(g.st,null,1)],{type:"application/json"}), "Backup Penormalan Sistem Sorong "+slotFile(slot)+".json"); }
+      else { await window.PPTExport.loadJSZip(); var r=await withState(g.st, function(){ return build(window.JSZip, ov); }); dl(r.blob, "Backup "+slotFile(slot)+" - "+r.name); }
+    }catch(e){ bkMsg("Gagal: "+(e.message||e), true); }
+    ov(null);
+  }
+  async function dlRange(){
+    var from=$("kn-bk-from").value, to=$("kn-bk-to").value, ppt=$("kn-bk-ppt").checked; if(from>to){ var x=from; from=to; to=x; }
+    var ov=(window.PPTExport&&window.PPTExport.overlay)||function(){};
+    try{
+      ov("Menyiapkan backup…"); await window.PPTExport.loadJSZip();
+      var recs=(await listSnaps()).filter(function(r){ return r.slot>=from && r.slot<=to; }).sort(function(a,b){ return a.slot<b.slot?-1:1; });
+      if(!recs.length) throw new Error("Tidak ada backup pada rentang waktu tersebut");
+      var zip=new window.JSZip();
+      zip.file("Rekap per jam.csv", "﻿"+CSV_COLS.join(";")+"\n"+recs.map(csvRow).join("\n"));
+      for(var i=0;i<recs.length;i++){ var r=recs[i]; ov("Backup "+(i+1)+"/"+recs.length+" · "+slotLabel(r.slot));
+        var g=await getSnap(r.slot); zip.file("JSON/"+slotFile(r.slot)+".json", JSON.stringify(g.st,null,1));
+        if(ppt){ var b=await withState(g.st, function(){ return build(window.JSZip, function(){}); }); zip.file("PPT/"+slotFile(r.slot)+" - "+b.name, b.blob); } }
+      ov("Menyimpan ZIP…");
+      var blob=await zip.generateAsync({type:"blob"});
+      dl(blob, "Backup Penormalan Sistem Sorong "+slotFile(from)+" sd "+slotFile(to)+".zip");
+      bkMsg(recs.length+" backup diunduh ("+slotLabel(from)+" s.d. "+slotLabel(to)+").");
+    }catch(e){ bkMsg("Gagal: "+(e.message||e), true); }
+    ov(null);
+  }
+  async function restoreSnap(slot, btn){
+    if(!btn.dataset.arm){ btn.dataset.arm="1"; btn.textContent="Yakin?"; setTimeout(function(){ if(btn.dataset.arm){ delete btn.dataset.arm; btn.textContent="Pulihkan"; } },3500); return; }
+    var g=await getSnap(slot); if(!g) return;
+    try{ localStorage.setItem(LSKEY+"_undo", JSON.stringify(S)); }catch(e){} // data sebelum pemulihan, untuk dibatalkan
+    S=Object.assign(defaults(), g.st); renderForm(); renderBoard(); save();
+    bkMsg("Data dipulihkan dari backup "+slotLabel(slot)+".", false, true); window.scrollTo({top:0, behavior:"smooth"});
+  }
+  function undoRestore(){ try{ var o=JSON.parse(localStorage.getItem(LSKEY+"_undo")); if(!o) return; S=o; localStorage.removeItem(LSKEY+"_undo"); renderForm(); renderBoard(); save(); bkMsg("Pemulihan dibatalkan; data dikembalikan seperti sebelumnya."); }catch(e){} }
+  function bkMsg(t, err, undo){ var m=$("kn-bk-msg"); if(!m) return; m.textContent=t; m.className="kn-save"+(err?" kn-save--err":"");
+    if(undo){ var b=document.createElement("button"); b.type="button"; b.className="kn-link"; b.style.marginLeft="10px"; b.textContent="↶ Batalkan pemulihan"; b.onclick=undoRestore; m.appendChild(b); } }
+  async function renderBackup(){
+    var box=$("kn-bk-body"); if(!box) return;
+    var recs; try{ recs=await listSnaps(); }catch(e){ box.innerHTML='<div class="kn-muted">Backup tidak tersedia: '+esc(e.message||e)+'</div>'; return; }
+    var dates={}; recs.forEach(function(r){ dates[r.slot.slice(0,10)]=1; }); var ds=Object.keys(dates).sort().reverse();
+    $("kn-bk-info").textContent=recs.length+" backup · "+ds.length+" hari"+(recs.length?" · terbaru "+slotLabel(recs[0].slot):"");
+    var dsel=$("kn-bk-date"), cur=dsel.value; dsel.innerHTML=ds.map(function(d){ var m=d.split("-"); return '<option value="'+d+'">'+m[2]+"/"+m[1]+"/"+m[0]+"</option>"; }).join("")||'<option value="">—</option>';
+    if(cur && dates[cur]) dsel.value=cur;
+    var opts=recs.slice().reverse().map(function(r){ return '<option value="'+r.slot+'">'+slotLabel(r.slot)+'</option>'; }).join("");
+    var f=$("kn-bk-from"), t=$("kn-bk-to"), fv=f.value, tv=t.value; f.innerHTML=opts; t.innerHTML=opts;
+    if(recs.length && tv && tv===bkSel) tv=recs[0].slot;   // "sampai jam" ikut maju bila sebelumnya = backup terbaru
+    bkSel=recs.length?recs[0].slot:null;
+    if(recs.length){ var day=dsel.value, inDay=recs.filter(function(r){ return r.slot.slice(0,10)===day; });
+      f.value=(fv&&recs.some(function(r){return r.slot===fv;}))?fv:(inDay.length?inDay[inDay.length-1].slot:recs[recs.length-1].slot);
+      t.value=(tv&&recs.some(function(r){return r.slot===tv;}))?tv:(inDay.length?inDay[0].slot:recs[0].slot); }
+    var day2=dsel.value, rows=recs.filter(function(r){ return r.slot.slice(0,10)===day2; });
+    var pc=function(a){ return nf(a[1])+" / "+nf(a[0])+' <b>'+a[2]+'%</b>'; };
+    box.innerHTML=rows.length ? '<table class="kn-ftbl kn-bk-tbl"><thead><tr><th>Jam</th><th>Disimpan</th><th>Update data</th><th class="num">Pelanggan nyala</th><th class="num">Penyulang nyala</th><th class="num">Beban nyala (kW)</th><th class="num">DMP (MW)</th><th>Unit tidak beroperasi</th><th>Unduh / pulihkan</th></tr></thead><tbody>'+
+      rows.map(function(r){ var s=r.sum, d=r.data;
+        return '<tr><td><b>'+r.slot.slice(11)+':00</b></td><td>'+new Date(r.savedAt).toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"})+'</td><td>'+esc(d.tgl.split("-").reverse().join("/")+" "+d.jam)+'</td><td class="num">'+pc(s.plg)+'</td><td class="num">'+pc(s.pny)+'</td><td class="num">'+pc(s.beban)+'</td><td class="num">'+esc(s.dmp||"–")+'</td>'+
+          '<td class="kn-bk-off" title="'+esc(s.off.join(", "))+'">'+s.op+'/'+s.tot+' operasi'+(s.off.length?' · <span class="kn-red">'+esc(s.off.slice(0,3).join(", "))+(s.off.length>3?" +"+(s.off.length-3):"")+'</span>':'')+'</td>'+
+          '<td class="kn-bk-act"><button type="button" class="kn-mini" data-bk="ppt" data-slot="'+r.slot+'">PPT</button><button type="button" class="kn-mini" data-bk="json" data-slot="'+r.slot+'">JSON</button><button type="button" class="kn-mini kn-mini--warn" data-bk="restore" data-slot="'+r.slot+'">Pulihkan</button></td></tr>'; }).join("")+'</tbody></table>'
+      : '<div class="kn-muted">Belum ada backup. Backup pertama dibuat otomatis saat data disimpan atau klik <b>Backup sekarang</b>.</div>';
+  }
+  function initBackup(){
+    $("kn-bk-date").onchange=function(){ $("kn-bk-from").value=""; $("kn-bk-to").value=""; renderBackup(); };
+    $("kn-bk-now").onclick=function(){ backupNow(S).then(function(sl){ bkMsg("Backup slot "+slotLabel(sl)+" diperbarui."); renderBackup(); }, function(e){ bkMsg("Gagal: "+(e.message||e), true); }); };
+    $("kn-bk-dl").onclick=dlRange;
+    $("kn-bk-body").addEventListener("click", function(ev){ var b=ev.target.closest("button[data-bk]"); if(!b) return; ev.stopPropagation();
+      if(b.dataset.bk==="restore") restoreSnap(b.dataset.slot, b); else dlSnap(b.dataset.slot, b.dataset.bk); });
+    renderBackup(); startHourly();
+  }
+
   /* ---------- init ---------- */
   function init(){
     if(inited){ renderBoard(); return; } inited=true;
@@ -268,7 +398,10 @@
     $("kn-reset").onclick=function(){ var b=this; if(b.dataset.arm){ S=defaults(); renderForm(); renderBoard(); save(); b.textContent="↺ Kembalikan data awal"; delete b.dataset.arm; }
       else { b.dataset.arm="1"; b.textContent="Klik lagi untuk konfirmasi"; setTimeout(function(){ if(b.dataset.arm){ delete b.dataset.arm; b.textContent="↺ Kembalikan data awal"; } },3500); } };
     $("kn-dl").onclick=function(){ if(window.PPTExport && window.PPTExport.exportActive) window.PPTExport.exportActive(); };
+    initBackup();
     $("kn-save").textContent=localStorage.getItem(LSKEY)?"Memakai data tersimpan di browser ini":"Data awal sesuai PPT update 26/11/2026 13:35 WIT";
   }
-  window.KondisiSistem = { init:init, download:download, build:build, _state:function(){ return S; } };
+  window.KondisiSistem = { init:init, download:download, build:build, _state:function(){ return S; }, _backupNow:function(){ return backupNow(); } };
+  // backup per jam berjalan selama dashboard terbuka (menu apa pun), bila data penormalan pernah diisi di browser ini
+  try{ if(localStorage.getItem(LSKEY)) setTimeout(startHourly, 4000); }catch(e){}
 })();

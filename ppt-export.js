@@ -296,6 +296,7 @@
     }catch(e){ console.error(e); alert("Gagal membuat PPT: "+e.message); }
     overlay(null);
   }
-  window.PPTExport={exportActive:exportActive, _analyze:analyze};
+  window.PPTExport={exportActive:exportActive, _analyze:analyze, overlay:overlay,
+    loadJSZip:function(){ return load(JSZIP, function(){ return !!window.JSZip; }); } };
   document.addEventListener("click", function(e){ var b=e.target.closest("#ppt-btn"); if(!b||b.disabled) return; b.disabled=true; exportActive().finally(function(){ b.disabled=false; }); });
 })();

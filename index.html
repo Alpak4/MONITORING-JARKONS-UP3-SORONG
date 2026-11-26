@@ -663,8 +663,6 @@ body.side-off .side-edge{display:inline-flex}
 .ppt-btn{gap:7px;padding:8px 14px;color:#fff;background:linear-gradient(135deg,#E9A700,#C98A00);border:1px solid #C98A00;font-size:12px;white-space:nowrap}
 .ppt-btn:hover{filter:brightness(1.06)}
 .ppt-btn:disabled{opacity:.6;cursor:progress}
-nav.tabbar .tab.tab-sub{margin:-2px 0 2px 18px;padding-top:7px;padding-bottom:7px;font-size:12px;border-left:2px solid rgba(253,185,19,.55);border-radius:0 8px 8px 0}
-nav.tabbar .tab.tab-sub svg{width:14px;height:14px}
 .fp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px 14px;align-items:end}
 .fp-grid label{display:block;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.3px;margin-bottom:5px}
 .fp-grid select,.fp-grid input[type=date],.fp-grid input[type=number]{width:100%;box-sizing:border-box;font:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--navy)}
@@ -779,6 +777,23 @@ nav.tabbar .tab.tab-sub svg{width:14px;height:14px}
 .kn-ff input{width:100%;font-size:12px!important}
 .kn-ff .kn-x{position:absolute;top:10px;right:10px}
 .kn-foot{margin-top:14px}
+.kn-bk-ctl{display:flex;flex-wrap:wrap;gap:12px 16px;align-items:flex-end;margin-top:12px}
+.kn-bk-ctl label,.kn-bk-day label{display:block;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.3px;margin-bottom:5px}
+.kn-bk select{font:inherit;font-size:13px;padding:7px 9px;border:1px solid var(--line);border-radius:8px;background:#fff;min-width:200px}
+.kn-bk-chk{margin:0 0 8px;text-transform:none!important;letter-spacing:0!important;font-size:12.5px!important;color:var(--navy)!important}
+.kn-bk-btns{display:flex;gap:8px;flex-wrap:wrap}
+.kn-bk-btns .ppt-btn{padding:9px 14px;font-size:12.5px}
+.kn-bk-day{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+.kn-bk-day select{min-width:160px}
+.kn-bk-tbl{font-size:12px}
+.kn-bk-tbl td{white-space:nowrap}
+.kn-bk-tbl td.num b{color:var(--navy);margin-left:4px}
+.kn-bk-off{max-width:190px;overflow:hidden;text-overflow:ellipsis}
+.kn-bk-act{display:flex;gap:5px}
+.kn-mini{font:inherit;font-size:11px;font-weight:700;color:var(--blue);background:#EEF4FB;border:1px solid #C9DCF0;border-radius:6px;padding:4px 9px;cursor:pointer}
+.kn-mini:hover{background:#DDEBF8}
+.kn-mini--warn{color:#8A5A00;background:#FFF6DF;border-color:#F2E0AE}
+
 .titleband-act{display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap;justify-content:flex-end}
 </style>
 </head>
@@ -874,8 +889,8 @@ nav.tabbar .tab.tab-sub svg{width:14px;height:14px}
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 L3 14 h7 l-1 8 10-12 h-7 z"/></svg>
     Gangguan
   </button>
-  <button class="tab tab-sub" data-tab="fgtmppt" title="Unduh PPT Evaluasi Gangguan JTM (FGTM) mingguan">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>
+  <button class="tab" data-tab="fgtmppt" title="Unduh PPT Evaluasi Gangguan JTM (FGTM) mingguan">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M12 16v4"/><path d="M8 20h8"/><path d="M7 12l3-3 2 2 4-4"/></svg>
     PPT Evaluasi FGTM
   </button>
   <button class="tab" data-tab="pemeliharaan">
@@ -1115,6 +1130,7 @@ nav.tabbar .tab.tab-sub svg{width:14px;height:14px}
         <span class="kn-tools">
           <button type="button" class="kn-link" id="kn-json">⤓ Simpan data (JSON)</button>
           <label class="kn-link">⤒ Muat data (JSON)<input type="file" id="kn-imp" accept="application/json,.json" hidden></label>
+          <a class="kn-link" href="#kn-backup" onclick="document.getElementById('kn-backup').scrollIntoView({behavior:'smooth'});return false;">🕘 Backup per jam</a>
           <button type="button" class="kn-link kn-link--red" id="kn-reset">↺ Kembalikan data awal</button>
         </span>
       </div>
@@ -1161,6 +1177,20 @@ nav.tabbar .tab.tab-sub svg{width:14px;height:14px}
         <label class="kn-upload"><input type="file" id="kn-foto-in" accept="image/*" multiple> <span>＋ Tambah foto</span></label>
         <div class="kn-f-foto" id="kn-f-foto"></div>
       </div>
+    </div>
+    <div class="section-h" id="kn-backup"><span class="bar"></span><h2>Backup Data per Jam</h2><span class="hint" id="kn-bk-info"></span></div>
+    <div class="panel kn-bk">
+      <div class="ph-sub">Backup dibuat otomatis tiap jam selama dashboard terbuka, dan setiap kali data diubah (isi tiap jam = data terakhir pada jam tersebut). Disimpan di browser ini, 30 hari terakhir.</div>
+      <div class="kn-bk-ctl">
+        <div><label for="kn-bk-from">Dari jam</label><select id="kn-bk-from"></select></div>
+        <div><label for="kn-bk-to">Sampai jam</label><select id="kn-bk-to"></select></div>
+        <label class="kn-chk kn-bk-chk"><input type="checkbox" id="kn-bk-ppt"> Sertakan PPT tiap jam</label>
+        <div class="kn-bk-btns"><button type="button" class="side-btn ppt-btn" id="kn-bk-dl">⤓ Unduh backup (ZIP)</button><button type="button" class="btn-reset" id="kn-bk-now">Backup sekarang</button></div>
+      </div>
+      <div class="ph-sub" style="margin-top:6px">ZIP berisi <b>Rekap per jam.csv</b> (buka di Excel), data <b>JSON</b> tiap jam (bisa dimuat ulang lewat <i>Muat data (JSON)</i>), dan PPT tiap jam bila dicentang.</div>
+      <div id="kn-bk-msg" class="kn-save" style="display:block;margin-top:8px"></div>
+      <div class="kn-bk-day"><label for="kn-bk-date">Daftar backup tanggal</label><select id="kn-bk-date"></select></div>
+      <div id="kn-bk-body" style="overflow:auto"></div>
     </div>
     <div class="ks-foot kn-foot">Data menu ini diisi manual dan tersimpan di browser perangkat yang dipakai. Untuk memindahkan ke perangkat lain, gunakan <b>Simpan data (JSON)</b> lalu <b>Muat data (JSON)</b>. Format PPT: "Progres Penormalan Kelistrikan Sistem Sorong (Editabel v3.1)".</div>
   </main>
@@ -1588,8 +1618,8 @@ nav.tabbar .tab.tab-sub svg{width:14px;height:14px}
 <script src="row-ppt.js?v=20261119a"></script>
 <script src="wp-ppt.js?v=20261103g"></script>
 <script src="fgtm-ppt.js?v=20261126a"></script>
-<script src="kondisi.js?v=20261126b"></script>
-<script src="ppt-export.js?v=20261126a"></script>
+<script src="kondisi.js?v=20261126c"></script>
+<script src="ppt-export.js?v=20261126c"></script>
 <script>
 (function(){
   var KEY="fgtm_side_off", b=document.body, narrow=matchMedia("(max-width:900px)");
